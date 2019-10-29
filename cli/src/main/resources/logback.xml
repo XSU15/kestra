@@ -42,6 +42,9 @@
 
     <logger name="org.floworc.runner.kafka.services" level="WARN" />
 
+    <!-- Micronaut  -->
+    <logger name="io.micronaut.context.env.DefaultEnvironment" level="INFO" />
+
     <!-- The configuration '%s' was supplied but isn't a known config. > https://github.com/apache/kafka/pull/5876 -->
     <logger name="org.apache.kafka.clients.producer.ProducerConfig" level="ERROR" />
     <logger name="org.apache.kafka.clients.admin.AdminClientConfig" level="ERROR" />
