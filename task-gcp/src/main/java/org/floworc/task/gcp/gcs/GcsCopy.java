@@ -5,7 +5,6 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.common.collect.ImmutableMap;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import org.floworc.core.models.tasks.RunnableTask;
 import org.floworc.core.models.tasks.Task;
@@ -36,7 +35,7 @@ public class GcsCopy extends Task implements RunnableTask {
         URI from = new URI(runContext.render(this.from));
         URI to = new URI(runContext.render(this.to));
 
-        BlobId source = BlobId.of(from.getAuthority(), from.getPath().substring(1));
+        BlobId source = BlobId.of(from.getScheme().equals("gs") ? from.getAuthority() : from.getScheme(), from.getPath().substring(1));
 
         logger.debug("Moving from '{}' to '{}'", from, to);
 
