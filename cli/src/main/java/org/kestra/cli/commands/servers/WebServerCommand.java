@@ -2,6 +2,7 @@ package org.kestra.cli.commands.servers;
 
 import io.micronaut.context.ApplicationContext;
 import lombok.extern.slf4j.Slf4j;
+import org.kestra.cli.AbstractCommand;
 import org.kestra.core.utils.Await;
 import picocli.CommandLine;
 
@@ -12,9 +13,13 @@ import javax.inject.Inject;
     description = "start the webserver"
 )
 @Slf4j
-public class WebServerCommand extends AbstractServerCommand {
+public class WebServerCommand extends AbstractCommand {
     @Inject
     private ApplicationContext applicationContext;
+
+    public WebServerCommand() {
+        super(true);
+    }
 
     @Override
     public void run() {
