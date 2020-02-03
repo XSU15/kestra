@@ -17,7 +17,7 @@ public @interface OutputProperty {
     String description() default "";
 
     /**
-     * @return The markdown of current element
+     * @return The body of current element
      */
-    String body() default "";
+    String[] body() default "";
 }
