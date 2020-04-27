@@ -1,14 +1,13 @@
 package org.kestra.runner.kafka.streams;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
-import org.apache.kafka.streams.kstream.Transformer;
+import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 @Slf4j
-public class DeduplicationTransformer<K, V, SV> implements Transformer<K, V, KeyValue<K, V>> {
+public class DeduplicationTransformer<K, V, SV> implements ValueTransformerWithKey<K, V, V> {
     private final String storeName;
     private KeyValueStore<String, SV> store;
     private final KeyValueMapper<K, V, String> storeKeyMapper;
@@ -31,20 +30,20 @@ public class DeduplicationTransformer<K, V, SV> implements Transformer<K, V, Key
     }
 
     @Override
-    public KeyValue<K, V> transform(final K key, final V value) {
+    public V transform(final K key, final V value) {
         String storeKey = storeKeyMapper.apply(key, value);
         SV currentValue = storeValueMapper.apply(key, value);
 
         SV latestValue = store.get(storeKey);
 
         if (latestValue != null && latestValue.equals(currentValue)) {
-            log.info("Duplicate value");
+            log.warn("Duplicate value for key '{}', storeKey '{}', value '{}'", key, storeKey, latestValue);
             return null;
         }
 
         store.put(storeKey, currentValue);
 
-        return KeyValue.pair(key, value);
+        return value;
     }
 
     @Override
