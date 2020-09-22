@@ -6,10 +6,10 @@ import javax.inject.Inject;
 
 public class RestartTest extends AbstractMemoryRunnerTest {
     @Inject
-    private RunnerCaseTest runnerCaseTest;
+    private RestartCaseTest restartCaseTest;
 
     @Test
     void restart() throws Exception {
-        runnerCaseTest.restart();
+        restartCaseTest.restart();
     }
 }
