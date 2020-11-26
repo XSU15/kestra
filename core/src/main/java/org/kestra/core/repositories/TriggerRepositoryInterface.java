@@ -8,6 +8,4 @@ import javax.validation.ConstraintViolationException;
 
 public interface TriggerRepositoryInterface {
     Optional<Trigger> findLast(TriggerContext trigger);
-
-    Trigger save(Trigger trigger) throws ConstraintViolationException;
 }
