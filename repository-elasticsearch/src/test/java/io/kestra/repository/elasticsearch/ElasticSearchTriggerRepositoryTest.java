@@ -8,7 +8,7 @@ import java.io.IOException;
 
 class ElasticSearchTriggerRepositoryTest extends AbstractTriggerRepositoryTest {
     @Inject
-    ElasticSearchFlowRepository elasticSearchFlowRepository;
+    ElasticsearchTriggerRepository elasticsearchTriggerRepository;
 
     @Inject
     private ElasticSearchRepositoryTestUtils utils;
@@ -16,6 +16,6 @@ class ElasticSearchTriggerRepositoryTest extends AbstractTriggerRepositoryTest {
     @AfterEach
     protected void tearDown() throws IOException {
         utils.tearDown();
-        elasticSearchFlowRepository.initMapping();
+        elasticsearchTriggerRepository.initMapping();
     }
 }
