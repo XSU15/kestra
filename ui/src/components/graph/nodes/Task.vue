@@ -1,6 +1,6 @@
 <script setup>
     import {Handle} from "@vue-flow/core"
-    import TreeNode from "../TreeNode.vue";
+    import TreeTaskNode from "../TreeTaskNode.vue";
 
     const emit = defineEmits(["follow", "mouseover", "mouseleave"])
 
@@ -40,7 +40,7 @@
 
 <template>
     <Handle type="source" :position="sourcePosition" />
-    <TreeNode
+    <TreeTaskNode
         :n="data.node"
         :namespace="data.namespace"
         :flow-id="data.flowId"
