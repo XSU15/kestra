@@ -9,16 +9,20 @@
     </el-input>
 
     <el-drawer
+        v-if="isOpen"
         v-model="isOpen"
-        :title="root"
         destroy-on-close
         size=""
         :append-to-body="true"
     >
+        <template #header>
+            <code>{{ root }}</code>
+        </template>
         <el-form label-position="top">
             <task-editor
                 ref="editor"
                 :model-value="taskYaml"
+                section="tasks"
                 @update:model-value="onInput"
             />
         </el-form>
