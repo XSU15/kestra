@@ -1,20 +1,22 @@
 <template>
-    <topology
-        v-if="flow"
-        :flow-id="flow.id"
-        :namespace="flow.namespace"
-        :flow-graph="flowGraph"
-        :is-read-only="isReadOnly"
-        :flow-error="flowError"
-    />
+    <el-card>
+        <LowCodeEditor
+            v-if="flow"
+            :flow-id="flow.id"
+            :namespace="flow.namespace"
+            :flow-graph="flowGraph"
+            :source="flow.source"
+            :is-read-only="isReadOnly"
+        />
+    </el-card>
 </template>
 <script>
-    import {mapGetters, mapState} from "vuex";
-    import Topology from "../inputs/EditorView.vue";
+    import {mapState} from "vuex";
+    import LowCodeEditor from "../inputs/LowCodeEditor.vue";
 
     export default {
         components: {
-            Topology,
+            LowCodeEditor,
         },
         props: {
             preventRouteInfo: {
@@ -28,10 +30,14 @@
         },
         computed: {
             ...mapState("flow", ["flow", "flowGraph"]),
-            ...mapGetters("flow", ["flowError"]),
         },
         beforeUnmount() {
             this.$store.commit("flow/setFlowError", undefined);
         },
     };
 </script>
+<style scoped>
+    el-card {
+        height: 100%;
+    }
+</style>
