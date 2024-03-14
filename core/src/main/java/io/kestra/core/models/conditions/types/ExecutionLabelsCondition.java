@@ -28,7 +28,7 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Condition for a specific flow. Note that this condition is deprecated, use `ExecutionFlowCondition` instead."
+    title = "Condition that check labels of an execution."
 )
 @Plugin(
     examples = {
@@ -49,7 +49,7 @@ public class ExecutionLabelsCondition extends Condition {
     @JsonDeserialize(using = ListOrMapOfLabelDeserializer.class)
     @NotNull
     @Schema(
-        description = "String against which to match the execution namespace depending on the provided comparison.",
+        description = "List of labels to match in the execution.",
         implementation = Object.class, anyOf = {List.class, Map.class}
     )
     @PluginProperty
