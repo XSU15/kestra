@@ -15,9 +15,11 @@ import java.util.List;
 @SuperBuilder
 @Getter
 @NoArgsConstructor
+@Deprecated
 public class EnumInput extends Input<String> {
     @Schema(
-        title = "List of values."
+        title = "List of values.",
+        description = "DEPRECATED; use 'SELECT' instead."
     )
     @NotNull
     List<@Regex String> values;
