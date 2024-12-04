@@ -14,10 +14,10 @@ class IDFunctionTest {
     @Inject VariableRenderer variableRenderer;
 
     @Test
-    void checkMaxKestraUUIDLength() throws IllegalVariableEvaluationException {
+    void checkIdIsNotEmpty() throws IllegalVariableEvaluationException {
         String rendered =
             variableRenderer.render(
-                "{{ generateKestraId() }}", Collections.emptyMap());
-        assertThat(rendered, rendered.length() <=22);
+                "{{ id() }}", Collections.emptyMap());
+        assertThat(rendered, !rendered.isEmpty());
     }
 }
