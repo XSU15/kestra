@@ -104,7 +104,9 @@ export const decodeParams = (route, query, include, OPTIONS) => {
 
 export const encodeSearchParams = (filters, OPTIONS) => {
     const encode = (values, key, operation) => {
-        return values.reduce((acc, v) => {
+        const valuesArray = Array.isArray(values) ? values : [values];
+
+        return valuesArray.reduce((acc, v) => {
             if (key === "childFilter" && v === "ALL") return acc;
 
             const encoded = encodeURIComponent(v);
