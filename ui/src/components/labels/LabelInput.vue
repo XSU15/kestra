@@ -60,7 +60,7 @@
             if (this.labels.length === 0) {
                 this.addItem();
             } else {
-                this.locals = this.labels.filter(item => !item || !toIgnore.some(prefix => !item.key || item.key?.startsWith(prefix)))
+                this.locals = this.labels.filter(item => item?.key === undefined || item?.key === null || !toIgnore.some(prefix => item.key?.startsWith(prefix)))
                 if(this.locals.length === 0) {
                     this.addItem();
                 }
@@ -78,7 +78,7 @@
                 if (this.locals.length === 0) {
                     this.addItem();
                 }
-                
+
                 this.$emit("update:labels", this.locals);
             },
             update(index, value, prop) {
