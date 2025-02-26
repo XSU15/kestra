@@ -636,7 +636,7 @@
 
         if (typeof wholeSearchContent.at(-1) === "string") {
             if (
-                ["labels", "details"].includes(wholeSearchContent.at(-2)?.label) ||
+                ["details"].includes(wholeSearchContent.at(-2)?.label) ||
                 wholeSearchContent.at(-2)?.value?.length === 0
             ) {
                 if(wholeSearchContent.at(-2)?.label === "child") {
