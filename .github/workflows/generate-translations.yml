@@ -7,8 +7,12 @@ on:
     inputs:
       retranslate_modified_keys:
         description: "Whether to re-translate modified keys even if they already have translations."
-        required: false
+        type: choice
+        options:
+          - "false"
+          - "true"
         default: "false"
+        required: false
 
 jobs:
   translations:
