@@ -2,6 +2,7 @@
 To run it locally, add OPENAI_API_KEY env variable and pip install gitpython openai
 """
 import json
+import sys
 import git
 from openai import OpenAI
 
@@ -83,8 +84,7 @@ def translate_text(text, target_language):
         return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"Error during translation: {e}")
-        return text # Return the original text if translation fails
-
+        return text # Return original if translation fails
 
 def unflatten_dict(d, sep="|"):
     result = {}
@@ -160,8 +160,7 @@ def get_keys_to_translate(file_path="ui/src/translations/en.json"):
 def remove_en_prefix(dictionary, prefix="en|"):
     return {k[len(prefix):]: v for k, v in dictionary.items() if k.startswith(prefix)}
 
-
-def main(language_code, target_language, input_file="ui/src/translations/en.json"):
+def main(language_code, target_language, input_file="ui/src/translations/en.json", retranslate_modified_keys=False):
     with open(f"ui/src/translations/{language_code}.json", "r") as f:
         target_dict = json.load(f)[language_code]
 
@@ -173,8 +172,8 @@ def main(language_code, target_language, input_file="ui/src/translations/en.json
 
     # Only re-translate if the key is not already in the target dict or is empty
     for k, v in to_translate.items():
-        # Skip if we already have a non-empty translation for this key
-        if k in target_flat and target_flat[k]:
+        # If we already have a non-empty translation, skip unless forced to re-translate
+        if k in target_flat and target_flat[k] and not retranslate_modified_keys:
             print(f"Skipping re-translation for '{k}' since a translation already exists.")
             continue
         new_translation = translate_text(v, target_language)
@@ -189,14 +188,19 @@ def main(language_code, target_language, input_file="ui/src/translations/en.json
         json.dump({language_code: updated_target_dict}, f, ensure_ascii=False, indent=2, sort_keys=True)
 
 if __name__ == "__main__":
-    main(language_code="de", target_language="German")
-    main(language_code="es", target_language="Spanish")
-    main(language_code="fr", target_language="French")
-    main(language_code="hi", target_language="Hindi")
-    main(language_code="it", target_language="Italian")
-    main(language_code="ja", target_language="Japanese")
-    main(language_code="ko", target_language="Korean")
-    main(language_code="pl", target_language="Polish")
-    main(language_code="pt", target_language="Portuguese")
-    main(language_code="ru", target_language="Russian")
-    main(language_code="zh_CN", target_language="Simplified Chinese (Mandarin)")
+    # Default to 'false' if no argument is provided
+    bool_from_ci = False
+    if len(sys.argv) > 1 and sys.argv[1].lower() == "true":
+        bool_from_ci = True
+
+    main(language_code="de", target_language="German", retranslate_modified_keys=bool_from_ci)
+    main(language_code="es", target_language="Spanish", retranslate_modified_keys=bool_from_ci)
+    main(language_code="fr", target_language="French", retranslate_modified_keys=bool_from_ci)
+    main(language_code="hi", target_language="Hindi", retranslate_modified_keys=bool_from_ci)
+    main(language_code="it", target_language="Italian", retranslate_modified_keys=bool_from_ci)
+    main(language_code="ja", target_language="Japanese", retranslate_modified_keys=bool_from_ci)
+    main(language_code="ko", target_language="Korean", retranslate_modified_keys=bool_from_ci)
+    main(language_code="pl", target_language="Polish", retranslate_modified_keys=bool_from_ci)
+    main(language_code="pt", target_language="Portuguese", retranslate_modified_keys=bool_from_ci)
+    main(language_code="ru", target_language="Russian", retranslate_modified_keys=bool_from_ci)
+    main(language_code="zh_CN", target_language="Simplified Chinese (Mandarin)", retranslate_modified_keys=bool_from_ci)
