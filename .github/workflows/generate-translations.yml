@@ -1,4 +1,4 @@
-name: Generate translations
+name: PR-independent translations generation
 
 on:
   schedule:
