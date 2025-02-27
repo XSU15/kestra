@@ -85,17 +85,6 @@ def translate_text(text, target_language):
         print(f"Error during translation: {e}")
         return text # Return the original text if translation fails
 
-def translate_dict(en_dict, target_language):
-    translated_dict = {}
-    for key, value in en_dict.items():
-        if isinstance(value, dict):
-            translated_value = translate_dict(value, target_language)
-        else:
-            translated_value = translate_text(value, target_language)
-            print(f"Translating key {key}:{value} to {target_language} -> '{translated_value}'.")
-        translated_dict[key] = translated_value
-    return translated_dict
-
 
 def unflatten_dict(d, sep="|"):
     result = {}
@@ -190,7 +179,7 @@ def main(language_code, target_language, input_file="ui/src/translations/en.json
             continue
         new_translation = translate_text(v, target_language)
         translated_flat_dict[k] = new_translation
-        print(f"Translating '{k}': '{v}' -> '{new_translation}'.")
+        print(f"Translating {k}:{v} to {target_language} -> '{new_translation}'.")
 
     target_flat.update(translated_flat_dict)
     updated_target_dict = unflatten_dict(target_flat)
