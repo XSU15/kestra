@@ -24,7 +24,11 @@
 <a href="https://www.youtube.com/@kestra-io"><img height="25" src="https://kestra.io/youtube.svg" alt="youtube" /></a> &nbsp;
 </p>
 
-<a href="https://trendshift.io/repositories/2714" target="_blank"><img src="https://trendshift.io/api/badge/repositories/2714" alt="kestra-io%2Fkestra | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<p align="center">
+  <a href="https://trendshift.io/repositories/2714" target="_blank">
+    <img src="https://trendshift.io/api/badge/repositories/2714" alt="kestra-io%2Fkestra | Trendshift" width="250" height="55"/>
+  </a>
+</p>
 
 <p align="center">
     <a href="https://go.kestra.io/video/product-overview" target="_blank">
