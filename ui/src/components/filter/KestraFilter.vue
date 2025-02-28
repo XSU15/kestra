@@ -672,8 +672,8 @@
         (options) => {
             if (options.length || !dropdowns.value.first?.shown) return;
 
-            if (!getInputValue().startsWith(TEXT_PREFIX)) {
-                select.value!.states.inputValue = `${TEXT_PREFIX}${getInputValue()}`;
+            if (!getInputValue()?.startsWith(TEXT_PREFIX) && select.value?.states?.inputValue) {
+                select.value.states.inputValue = `${TEXT_PREFIX}${getInputValue()}`;
             }
         },
         {immediate: true},
