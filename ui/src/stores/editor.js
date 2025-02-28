@@ -7,6 +7,7 @@ export default {
         current: undefined,
         tabs: [],
         view: undefined,
+        treeData: [],
     },
     mutations: {
         updateOnboarding(state) {
@@ -99,6 +100,13 @@ export default {
         },
         changeView(state, view) {
             state.view = view;
+        },
+        refreshTree(state) {
+            state.explorerVisible = true;
+            state.treeRefresh = Date.now();
+        },
+        setTreeData(state, data) {
+            state.treeData = data;
         },
     },
 };
