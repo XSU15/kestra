@@ -125,7 +125,7 @@
                 default: false
             }
         },
-        emits: ["editorDidMount", "change"],
+        emits: ["editorDidMount", "change", "tabLoaded"],
         model: {
             event: "change"
         },
@@ -149,16 +149,20 @@
                     return;
                 }
 
+                let model
                 if (newValue.persistent && this.flow?.source) {
-                    await this.changeTab("Flow", () => this.flow.source);
+                    model = await this.changeTab("Flow", () => this.flow.source);
                 } else {
                     const payload = {
                         namespace: this.$route.params.namespace || this.$route.params.id,
                         path: newValue.path ?? newValue.name,
                     };
 
-                    await this.changeTab(newTabName, () => this.readFile(payload));
+                    model = await this.changeTab(newTabName, () => this.readFile(payload));
                 }
+                const source = model.getValue()
+                this.$emit("change", source);
+                this.$emit("tabLoaded", newValue, source);
             },
             options: {
                 deep: true,
@@ -452,6 +456,8 @@
                     }
                 }
                 this.editor.setModel(model);
+
+                return model
             },
             getEditor: function () {
                 return this.editor;
