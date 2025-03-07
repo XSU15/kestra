@@ -129,12 +129,6 @@
     "collapse": "折りたたむ",
     "collapse all": "すべて折りたたむ",
     "concurrency": "並行性",
-    "concurrency-view": {
-      "desc_no_executions": "<strong><a href=\"https://kestra.io/docs/workflow-components/execution\" target=\"_blank\">Execution</a></strong>についての詳細は、ドキュメントをご覧ください。",
-      "desc_no_limit": "<strong><a href=\"https://kestra.io/docs/workflow-components/concurrency\" target=\"_blank\">並行性制限</a></strong>についての詳細は、ドキュメントをご覧ください。",
-      "title_no_executions": "このFlowに対する進行中のExecutionはありません。",
-      "title_no_limit": "このFlowには制限が設定されていません。"
-    },
     "conditions": "条件",
     "configure basic auth": "基本認証を設定",
     "confirm": "確認",
@@ -313,10 +307,6 @@
     "dependencies loaded": "依存関係が読み込まれました",
     "dependencies missing acls": "このflowには権限がありません",
     "dependency task": "Task {taskId}は他のtaskの依存関係です",
-    "dependency-view": {
-      "desc_no_deps": "<a href=\"https://kestra.io/docs/ui/flows#dependencies\" target=\"_blank\">Flow Dependencies</a>についての詳細は、ドキュメントをご覧ください。",
-      "title_no_deps": "このFlowには依存関係が設定されていません。"
-    },
     "description": "説明",
     "details": "詳細",
     "disable": "無効化",
@@ -752,7 +742,6 @@
       },
       "empty": {
         "create_message": "namespaceファイルを作成またはインポートできます。",
-        "message": "サイドバーからnamespaceファイルを作成またはインポートできます。また、エディターの紹介ビデオをチェックしてください。",
         "title": "現在開いているタブはありません",
         "video_message": "エディターの紹介ビデオをご覧いただけます。"
       }
@@ -1178,10 +1167,6 @@
     "triggered done": "実行<em>{name}</em>が正常にトリガーされました",
     "triggerflow disabled": "Flow定義からTriggerが無効になっています",
     "triggers": "Triggers",
-    "triggers-view": {
-      "desc_no_triggers": "以下のリンクから、ドキュメント内の<strong><a href=\"https://kestra.io/docs/workflow-components/triggers\" target=\"_blank\">Triggers</a></strong>についてさらに詳しくお読みください。",
-      "title_no_triggers": "あなたのflowにはTriggerがありません。"
-    },
     "triggers_state": {
       "options": {
         "disabled": "無効",

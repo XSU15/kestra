@@ -129,12 +129,6 @@
     "collapse": "Zwiń",
     "collapse all": "Zwiń wszystko",
     "concurrency": "Współbieżność",
-    "concurrency-view": {
-      "desc_no_executions": "Przeczytaj więcej o <strong><a href=\"https://kestra.io/docs/workflow-components/execution\" target=\"_blank\">Executions</a></strong> w naszej dokumentacji.",
-      "desc_no_limit": "Przeczytaj więcej o <strong><a href=\"https://kestra.io/docs/workflow-components/concurrency\" target=\"_blank\">Limitach Concurrency</a></strong> w naszej dokumentacji.",
-      "title_no_executions": "Brak trwających Executions dla tego Flow.",
-      "title_no_limit": "Brak limitów ustawionych dla tego Flow."
-    },
     "conditions": "warunki",
     "configure basic auth": "Skonfiguruj podstawowe uwierzytelnianie",
     "confirm": "Potwierdź",
@@ -313,10 +307,6 @@
     "dependencies loaded": "Zależności załadowane",
     "dependencies missing acls": "Brak uprawnień do tego flow",
     "dependency task": "Task {taskId} jest zależnością innego task",
-    "dependency-view": {
-      "desc_no_deps": "Przeczytaj więcej o <a href=\"https://kestra.io/docs/ui/flows#dependencies\" target=\"_blank\">Flow Dependencies</a> w naszej dokumentacji.",
-      "title_no_deps": "Brak zależności ustawionych dla tego Flow."
-    },
     "description": "Opis",
     "details": "Szczegóły",
     "disable": "Wyłącz",
@@ -752,7 +742,6 @@
       },
       "empty": {
         "create_message": "Możesz tworzyć lub importować pliki namespace.",
-        "message": "Możesz tworzyć lub importować pliki namespace z paska bocznego i obejrzeć film wprowadzający do naszego Edytora.",
         "title": "Obecnie brak otwartych zakładek",
         "video_message": "Możesz obejrzeć Wideo Wprowadzające do naszego Edytora."
       }
@@ -1178,10 +1167,6 @@
     "triggered done": "Wykonanie <em>{name}</em> zostało pomyślnie uruchomione",
     "triggerflow disabled": "Trigger jest wyłączony w definicji flow",
     "triggers": "Triggers",
-    "triggers-view": {
-      "desc_no_triggers": "Przeczytaj więcej o <strong><a href=\"https://kestra.io/docs/workflow-components/triggers\" target=\"_blank\">Triggers</a></strong> w naszej dokumentacji.",
-      "title_no_triggers": "Twój flow nie ma żadnych triggerów."
-    },
     "triggers_state": {
       "options": {
         "disabled": "Wyłączone",

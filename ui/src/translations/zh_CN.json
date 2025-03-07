@@ -129,12 +129,6 @@
     "collapse": "折叠",
     "collapse all": "折叠所有",
     "concurrency": "并发",
-    "concurrency-view": {
-      "desc_no_executions": "在我们的文档中阅读更多关于<strong><a href=\"https://kestra.io/docs/workflow-components/execution\" target=\"_blank\">Executions</a></strong>的信息。",
-      "desc_no_limit": "在我们的文档中阅读更多关于<strong><a href=\"https://kestra.io/docs/workflow-components/concurrency\" target=\"_blank\">并发限制</a></strong>的信息。",
-      "title_no_executions": "此Flow没有正在进行的Executions。",
-      "title_no_limit": "没有为此 Flow 设置限制。"
-    },
     "conditions": "条件",
     "configure basic auth": "配置基本认证",
     "confirm": "确认",
@@ -313,10 +307,6 @@
     "dependencies loaded": "依赖项已加载",
     "dependencies missing acls": "此流程没有权限",
     "dependency task": "任务 {taskId} 是另一个任务的依赖",
-    "dependency-view": {
-      "desc_no_deps": "在我们的文档中阅读更多关于<a href=\"https://kestra.io/docs/ui/flows#dependencies\" target=\"_blank\">Flow Dependencies</a>的信息。",
-      "title_no_deps": "此 Flow 未设置任何依赖项。"
-    },
     "description": "描述",
     "details": "详情",
     "disable": "禁用",
@@ -752,7 +742,6 @@
       },
       "empty": {
         "create_message": "您可以创建或导入namespace文件。",
-        "message": "你可以从侧边栏创建或导入命名空间文件，也可以查看我们的编辑器介绍视频。",
         "title": "当前没有打开的标签",
         "video_message": "您可以查看我们编辑器的介绍视频。"
       }
@@ -1178,10 +1167,6 @@
     "triggered done": "执行 <em>{name}</em> 成功触发",
     "triggerflow disabled": "触发器在流程定义中被禁用",
     "triggers": "触发器",
-    "triggers-view": {
-      "desc_no_triggers": "在我们的文档中阅读更多关于<strong><a href=\"https://kestra.io/docs/workflow-components/triggers\" target=\"_blank\">Triggers</a></strong>的信息。",
-      "title_no_triggers": "您的 flow 没有任何 Triggers。"
-    },
     "triggers_state": {
       "options": {
         "disabled": "禁用",

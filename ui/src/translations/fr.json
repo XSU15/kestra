@@ -129,12 +129,6 @@
     "collapse": "Masquer",
     "collapse all": "Masquer tout",
     "concurrency": "Concurrence",
-    "concurrency-view": {
-      "desc_no_executions": "En savoir plus sur les <strong><a href=\"https://kestra.io/docs/workflow-components/execution\" target=\"_blank\">Executions</a></strong> dans notre documentation.",
-      "desc_no_limit": "En savoir plus sur les <strong><a href=\"https://kestra.io/docs/workflow-components/concurrency\" target=\"_blank\">limites de Concurrency</a></strong> dans notre documentation.",
-      "title_no_executions": "Aucune exécution en cours pour ce Flow.",
-      "title_no_limit": "Aucune limite n'est définie pour ce Flow."
-    },
     "conditions": "conditions",
     "configure basic auth": "Configurer l'authentification basique",
     "confirm": "Confirmer",
@@ -313,10 +307,6 @@
     "dependencies loaded": "Dépendances chargées",
     "dependencies missing acls": "Aucune permission sur ce flow",
     "dependency task": "La tâche {taskId} est une dépendance d'une autre tâche",
-    "dependency-view": {
-      "desc_no_deps": "En savoir plus sur les <a href=\"https://kestra.io/docs/ui/flows#dependencies\" target=\"_blank\">dépendances de Flow</a> dans notre documentation.",
-      "title_no_deps": "Aucune dépendance n'est définie pour ce Flow."
-    },
     "description": "Description",
     "details": "Détails",
     "disable": "Désactiver",
@@ -752,7 +742,6 @@
       },
       "empty": {
         "create_message": "Vous pouvez créer ou importer des fichiers de namespace.",
-        "message": "Vous pouvez créer ou importer des fichiers de namespace à partir de la barre latérale et vous pouvez consulter la vidéo d'introduction pour notre éditeur.",
         "title": "Aucun onglet actuellement ouvert",
         "video_message": "Vous pouvez regarder la vidéo d'introduction pour notre éditeur."
       }
@@ -1178,10 +1167,6 @@
     "triggered done": "L'exécution <em>{name}</em> est déclenchée !",
     "triggerflow disabled": "Déclencheur désactivé depuis la définition du flow",
     "triggers": "Déclencheurs",
-    "triggers-view": {
-      "desc_no_triggers": "En savoir plus sur les <strong><a href=\"https://kestra.io/docs/workflow-components/triggers\" target=\"_blank\">Triggers</a></strong> dans notre documentation.",
-      "title_no_triggers": "Votre flow n'a pas de triggers."
-    },
     "triggers_state": {
       "options": {
         "disabled": "Désactivé",
