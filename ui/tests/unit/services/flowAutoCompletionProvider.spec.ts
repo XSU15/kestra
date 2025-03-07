@@ -70,7 +70,7 @@ const mockedStore: MockStore<Record<string, any>> = {
                         value: {}
                     }))
                 default:
-                    return Promise.resolve({})
+                    return Promise.reject("404")
             }
         } else if (type === "namespace/loadNamespacesForDatatype" && payload.dataType === "flow") {
             return Promise.resolve(["my.namespace", "another.namespace"])
@@ -78,7 +78,7 @@ const mockedStore: MockStore<Record<string, any>> = {
             if (payload === "another.namespace") {
                 return Promise.resolve([{id: "flow-other-namespace"}, {id: "another-flow-other-namespace"}])
             } else {
-                return Promise.resolve([])
+                return Promise.reject("404")
             }
         } else if (type === "flow/loadFlow") {
             if (
@@ -96,10 +96,10 @@ const mockedStore: MockStore<Record<string, any>> = {
                     ]
                 })
             } else {
-                return Promise.resolve({})
+                return Promise.reject("404")
             }
         }
-        return Promise.resolve({})
+        return Promise.reject("404")
     })
 } as any
 
