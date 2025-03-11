@@ -328,6 +328,8 @@
                     .then(errors => {
                         if (errors.constraints) {
                             this.errors = [errors.constraints];
+                        } else {
+                            this.errors = undefined;
                         }
                     });
             }
