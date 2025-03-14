@@ -33,11 +33,13 @@ public class RunContextLogger implements Supplier<org.slf4j.Logger> {
 
     private final String loggerName;
     private volatile Logger logger; // must be volatile as it is built lazily via DCL
+
     private QueueInterface<LogEntry> logQueue;
     private LogEntry logEntry;
     private Level loglevel;
     private final List<String> useSecrets = new ArrayList<>();
     private final boolean logToFile;
+
     @Getter
     private File logFile;
     private OutputStream logFileOS;
@@ -54,6 +56,7 @@ public class RunContextLogger implements Supplier<org.slf4j.Logger> {
         } else {
             this.loggerName = "flow." + logEntry.getFlowId() + "." + logEntry.getTriggerId();
         }
+
         this.logQueue = logQueue;
         this.logEntry = logEntry;
         this.loglevel = loglevel == null ? Level.TRACE : Level.toLevel(loglevel.toString());
@@ -364,10 +367,12 @@ public class RunContextLogger implements Supplier<org.slf4j.Logger> {
     }
 
     public static class ForwardAppender extends BaseAppender {
-        private static final ch.qos.logback.classic.Logger LOGGER = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("flow");
+        private final ch.qos.logback.classic.Logger fowardLogger;
 
         protected ForwardAppender(RunContextLogger runContextLogger, Logger logger) {
             super(runContextLogger, logger);
+
+            fowardLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(runContextLogger.loggerName);
         }
 
         @Override
@@ -384,8 +389,8 @@ public class RunContextLogger implements Supplier<org.slf4j.Logger> {
         protected void append(ILoggingEvent e) {
             e = this.transform(e);
 
-            if (LOGGER.isEnabledFor(e.getLevel())) {
-                LOGGER.callAppenders(e);
+            if (fowardLogger.isEnabledFor(e.getLevel())) {
+                fowardLogger.callAppenders(e);
             }
         }
     }
