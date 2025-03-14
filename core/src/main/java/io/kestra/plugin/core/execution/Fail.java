@@ -29,8 +29,8 @@ import lombok.experimental.SuperBuilder;
 @Plugin(
     examples = {
         @Example(
-            title = "Fail on a switch branch",
             full = true,
+            title = "Fail on a switch branch",
             code = """
                 id: fail_on_switch
                 namespace: company.team
@@ -63,8 +63,8 @@ import lombok.experimental.SuperBuilder;
             """
         ),
         @Example(
-            title = "Fail on a condition",
             full = true,
+            title = "Fail on a condition",
             code = """
                 id: fail_on_condition
                 namespace: company.team

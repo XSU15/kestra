@@ -78,7 +78,7 @@ import java.util.stream.Stream;
         ),
         @Example(
             full = true,
-            title = "Schedule a flow every day at 6:30 AM"
+            title = "Schedule a flow every day at 6:30 AM",
             code = """
                 id: daily_flow
                 namespace: company.team
@@ -152,7 +152,7 @@ import java.util.stream.Stream;
                 cron: "0 9 * * *"
                 stopAfter:
                   - FAILED"""
-        ),
+        )
     },
     aliases = "io.kestra.core.models.triggers.types.Schedule"
 )
