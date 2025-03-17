@@ -131,12 +131,14 @@
         <ExecutionsBar
             :data="graphData"
             :total="stats.total"
+            :loading="executionsLoading"
             class="card card-2/3"
         />
 
         <ExecutionsDoughnut
             :data="graphData"
             :total="stats.total"
+            :loading="executionsLoading"
             class="card card-1/3"
         />
 
@@ -170,6 +172,7 @@
             v-else
             :flow="props.flowId"
             :namespace="props.namespace"
+            :loading="executionsLoading"
             class="card card-1/2"
         />
 
@@ -177,23 +180,34 @@
             v-if="props.flow"
             :flow="props.flowId"
             :namespace="props.namespace"
+            :loading="executionsLoading"
             class="card card-1/2"
         />
         <ExecutionsNextScheduled
             v-else-if="isAllowedTriggers"
             :flow="props.flowId"
             :namespace="props.namespace"
+            :loading="executionsLoading"
             class="card card-1/2"
         />
 
-        <ExecutionsEmptyNextScheduled v-else class="card card-1/2" />
+        <ExecutionsEmptyNextScheduled 
+            v-else 
+            :loading="executionsLoading"
+            class="card card-1/2" 
+        />
         <ExecutionsNamespace
             v-if="!props.flow && Object.keys(namespaceExecutions).length > 1"
             class="card card-1"
             :data="namespaceExecutions"
             :total="stats.total"
         />
-        <Logs v-if="!props.flow" :data="logs" class="card card-1" />
+        <Logs 
+            v-if="!props.flow" 
+            :data="logs" 
+            :loading="executionsLoading"
+            class="card card-1" 
+        />
     </div>
 </template>
 
@@ -404,20 +418,22 @@
     const fetchExecutions = () => {
         executionsLoading.value = true;
 
-        store.dispatch("stat/daily", mergeQuery()).then((response) => {
-            const sorted = response.sort(
-                (a, b) => new Date(b.date) - new Date(a.date),
-            );
+        return store.dispatch("stat/daily", mergeQuery())
+            .then((response) => {
+                const sorted = response.sort(
+                    (a, b) => new Date(b.date) - new Date(a.date),
+                );
 
-            executions.value = {
-                raw: sorted,
-                all: transformer(sorted),
-                yesterday: sorted.at(-2),
-                today: sorted.at(-1),
-            };
-        }).finally(() => {
-            executionsLoading.value = false;
-        });
+                executions.value = {
+                    raw: sorted,
+                    all: transformer(sorted),
+                    yesterday: sorted.at(-2),
+                    today: sorted.at(-1),
+                };
+            })
+            .finally(() => {
+                executionsLoading.value = false;
+            });
     };
 
     const graphData = computed(() => store.state.stat.daily || []);
@@ -454,14 +470,17 @@
 
         if (!custom.value.shown) {
             try {
-                await Promise.any([
+                executionsLoading.value = true;
+                await Promise.all([
                     fetchNumbers(),
                     fetchExecutions(),
                     fetchNamespaceExecutions(),
                     fetchLogs(),
-                ]);
-            } catch (error) {
-                console.error("All promises failed:", error);
+                ]).catch(error => {
+                    console.error("Failed to fetch dashboard data:", error);
+                });
+            } finally {
+                executionsLoading.value = false;
             }
         }
     };
