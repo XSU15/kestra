@@ -757,6 +757,7 @@
             "editor_type": "Default Editor Type",
             "execute_flow": "Execute the Flow",
             "execute_default_tab": "Default Execution Tab",
+            "multi_panel_editor": "Multi Panel Editor",
             "flow_default_tab": "Default Flow Tab"
           }
         },
