@@ -39,12 +39,7 @@ export class NamespaceSecretIterator extends EntityIterator<NamespaceSecret>{
     }
 
     private async doFetch(): Promise<{ total: number; results: NamespaceSecret[], readOnly: boolean }> {
-        let fetch;
-        try {
-            fetch = await this.store.dispatch("namespace/secrets", this.fetchOptions());
-        } catch {
-            return Promise.resolve({total: 0, results: [], readOnly: false});
-        }
+        const fetch = await this.store.dispatch("namespace/listSecrets", this.fetchOptions());
         this.areNamespaceSecretsReadOnly = fetch.readOnly ?? true;
 
         return {

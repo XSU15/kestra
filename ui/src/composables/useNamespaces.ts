@@ -16,11 +16,7 @@ export class NamespaceIterator extends EntityIterator<Namespace>{
     }
 
     fetchCall(): Promise<{ total: number; results: Namespace[] }> {
-        try {
-            return this.store.dispatch("namespace/search", this.fetchOptions());
-        } catch {
-            return Promise.resolve({total: 0, results: []});
-        }
+        return this.store.dispatch("namespace/search", this.fetchOptions());
     }
 }
 
