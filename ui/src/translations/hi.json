@@ -1013,6 +1013,7 @@
     "secret": {
       "add": "नया secret",
       "inherited": "Inherited secrets",
+      "isReadOnly": "सीक्रेट केवल पढ़ने के लिए है",
       "names": "Secrets",
       "update": "गुप्त जानकारी '{name}' अपडेट करें"
     },

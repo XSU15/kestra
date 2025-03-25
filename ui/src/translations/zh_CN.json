@@ -1013,6 +1013,7 @@
     "secret": {
       "add": "新密钥",
       "inherited": "继承的秘密",
+      "isReadOnly": "Secret 是只读的",
       "names": "秘密",
       "update": "更新密钥 '{name}'"
     },

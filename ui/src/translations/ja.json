@@ -1013,6 +1013,7 @@
     "secret": {
       "add": "新しいシークレット",
       "inherited": "継承されたsecrets",
+      "isReadOnly": "シークレットは読み取り専用です",
       "names": "Secrets",
       "update": "シークレット '{name}' を更新"
     },

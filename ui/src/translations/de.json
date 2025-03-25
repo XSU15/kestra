@@ -1013,6 +1013,7 @@
     "secret": {
       "add": "Neues Geheimnis",
       "inherited": "Geerbte Secrets",
+      "isReadOnly": "Geheimnis ist schreibgeschützt",
       "names": "Secrets",
       "update": "Aktualisiere Secret '{name}'"
     },

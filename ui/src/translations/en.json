@@ -936,6 +936,7 @@
     "secret": {
       "add": "New secret",
       "update": "Update secret '{name}'",
+      "isReadOnly": "Secret is read-only",
       "names": "Secrets",
       "inherited": "Inherited secrets"
     },

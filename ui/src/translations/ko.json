@@ -1013,6 +1013,7 @@
     "secret": {
       "add": "새 비밀",
       "inherited": "상속된 비밀",
+      "isReadOnly": "비밀은 읽기 전용입니다",
       "names": "비밀",
       "update": "비밀 '{name}' 업데이트"
     },
