@@ -11,7 +11,10 @@
     import "monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js"
     import "monaco-editor/esm/vs/language/json/monaco.contribution";
     import "monaco-editor/esm/vs/basic-languages/monaco.contribution";
+    import {ILanguageFeaturesService} from "monaco-editor/esm/vs/editor/common/services/languageFeatures"
+    import {StandaloneServices} from "monaco-editor/esm/vs/editor/standalone/browser/standaloneServices"
     import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+    import {editor, IPosition, languages} from "monaco-editor/esm/vs/editor/editor.api";
     import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
     import YamlWorker from "./yaml.worker.js?worker";
     import JsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
@@ -23,6 +26,9 @@
     import {FlowAutoCompletion} from "override/services/flowAutoCompletionProvider.js";
     import RegexProvider from "../../utils/regex";
     import type {Position} from "monaco-editor"
+    import IModel = editor.IModel;
+    import CompletionList = languages.CompletionList;
+    import ProviderResult = languages.ProviderResult;
 
     window.MonacoEnvironment = {
         getWorker(_moduleId, label) {
@@ -188,6 +194,36 @@
                     format: true,
                     schemas: yamlSchemas(this.$store)
                 });
+
+                const yamlCompletion = (StandaloneServices.get(ILanguageFeaturesService).completionProvider._entries as {
+                    selector: string,
+                    provider: {
+                        provideCompletionItems: (model: IModel, position: IPosition) => ProviderResult<CompletionList>
+                    }
+                }[]).find(completion => completion.selector === "yaml");
+
+                if (yamlCompletion !== undefined) {
+                    const initialCompletion = yamlCompletion.provider.provideCompletionItems;
+                    yamlCompletion.provider.provideCompletionItems = async function (model: IModel, position: IPosition) {
+                        const defaultCompletion = await initialCompletion(model, position);
+                        if (!defaultCompletion) {
+                            return defaultCompletion;
+                        }
+
+                        (defaultCompletion.suggestions as {
+                            label: string,
+                            filterText: string
+                        }[]).forEach(suggestion => {
+                            if (suggestion.label.includes(".")) {
+                                const dotSplit = suggestion.label.split(/\.(?=\w)/);
+                                suggestion.filterText = [dotSplit.pop(), ...dotSplit].join(".");
+                            }
+                        });
+
+
+                        return defaultCompletion;
+                    };
+                }
             }
 
             const NO_SUGGESTIONS = {suggestions: []};
