@@ -76,6 +76,7 @@
                 flowsInputsCache: {},
                 autoCompletionProviders: [] as monaco.IDisposable[],
                 monaco: null as typeof monaco | null,
+                suggestWidgetObserver: undefined as MutationObserver | undefined
             }
         },
         computed: {
@@ -212,8 +213,13 @@
 
                         (defaultCompletion.suggestions as {
                             label: string,
-                            filterText: string
+                            filterText: string,
+                            insertText: string
                         }[]).forEach(suggestion => {
+                            if (suggestion.label.endsWith("...") && suggestion.insertText.includes(suggestion.label.substring(0, suggestion.label.length - 3))) {
+                                suggestion.label = suggestion.insertText;
+                            }
+
                             if (suggestion.label.includes(".")) {
                                 const dotSplit = suggestion.label.split(/\.(?=\w)/);
                                 suggestion.filterText = [dotSplit.pop(), ...dotSplit].join(".");
@@ -406,6 +412,67 @@
         },
         methods: {
             ...mapMutations("editor", ["setTabDirty"]),
+            /**
+             * Goal of this method is to add an observer on the suggest widget to auto-resize it to fit tasks without ellipsis at first appearance.
+             * It's using a MutationObserver. The observer expects two scenario:
+             *
+             *  - `target` is looked at. If it's a Sash (VSCode resizer handle) and it's not disabled (which is the case while loading schema),
+             *  it manipulates it through MouseEvents to resize the suggest window. If it's disabled it returns and wait for the next pass while watching class changes
+             *  - otherwise, addedNodes is looked at. In that case we are watching for any new children of the global vscode widget handler. The goal is to detect the sash addition
+             *  because it's not there at startup. Once detected, if it's disabled it changes the observer to target the Sash (see above) but watching the class to detect `disabled` class removal.
+             *  If the Sash is not disabled, we resize directly.
+             *
+             *  Once the resize has been done, the observer is disconnected and put back to undefined so that new instances of Monaco repeats the process to target the proper DOM element.
+             */
+            observeAndResizeSuggestWidget() {
+                if (this.suggestWidgetObserver !== undefined) {
+                    return;
+                }
+
+                this.suggestWidgetObserver = new MutationObserver(([{
+                    target,
+                    addedNodes
+                }]) => {
+                    const simulateResizeOnSashAndDisconnect = (resizer: HTMLElement) => {
+                        this.suggestWidgetObserver?.disconnect();
+                        this.suggestWidgetObserver = undefined;
+
+                        const resizerInitialCoordinates = {x: resizer.getBoundingClientRect().left, y: resizer.getBoundingClientRect().top};
+
+                        resizer.dispatchEvent(new MouseEvent("mouseenter", {bubbles: true, clientX: resizerInitialCoordinates.x, clientY: resizerInitialCoordinates.y}));
+                        resizer.dispatchEvent(new MouseEvent("mouseover", {bubbles: true, clientX: resizerInitialCoordinates.x, clientY: resizerInitialCoordinates.y}));
+                        resizer.dispatchEvent(new MouseEvent("mousedown", {bubbles: true, clientX: resizerInitialCoordinates.x, clientY: resizerInitialCoordinates.y}));
+                        resizer.dispatchEvent(new MouseEvent("mousemove", {bubbles: true, clientX: resizerInitialCoordinates.x + 80, clientY: resizerInitialCoordinates.y}));
+                        resizer.dispatchEvent(new MouseEvent("mouseup", {bubbles: true, clientX: resizerInitialCoordinates.x + 80, clientY: resizerInitialCoordinates.y}));
+                        resizer.dispatchEvent(new MouseEvent("mouseout", {bubbles:true, clientX: resizerInitialCoordinates.x + 80, clientY: resizerInitialCoordinates.y}));
+                        resizer.dispatchEvent(new MouseEvent("mouseleave", {bubbles: true, clientX: resizerInitialCoordinates.x + 80, clientY: resizerInitialCoordinates.y}));
+                    }
+
+                    const targetHtmlElement = target as HTMLElement;
+                    if (targetHtmlElement.classList.contains("monaco-sash")) {
+                        if(!targetHtmlElement.classList.contains("disabled")) {
+                            simulateResizeOnSashAndDisconnect(targetHtmlElement);
+                        }
+
+                        return;
+                    }
+
+                    const maybeSuggestWidgetHtmlElement = addedNodes?.[0] as HTMLElement;
+                    if (maybeSuggestWidgetHtmlElement?.classList.contains("suggest-widget")) {
+                        const resizer = ([...maybeSuggestWidgetHtmlElement.querySelectorAll(".monaco-sash.vertical")] as HTMLElement[])
+                            .sort((a, b) => parseInt(b.style.left) - parseInt(a.style.left))[0];
+
+                        if (resizer.classList.contains("disabled")) {
+                            this.suggestWidgetObserver!.disconnect();
+                            this.suggestWidgetObserver?.observe(resizer, {attributeFilter: ["class"]})
+                        } else {
+                            simulateResizeOnSashAndDisconnect(resizer);
+                        }
+                    }
+                });
+
+                this.suggestWidgetObserver.observe(this.$el.querySelector(".overflowingContentWidgets"), {childList: true})
+            },
             initMonaco: async function () {
                 let self = this;
                 let options = {
@@ -465,6 +532,8 @@
                     }
                 }
 
+                this.observeAndResizeSuggestWidget();
+
                 let editor: monaco.editor.IStandaloneCodeEditor = this.getModifiedEditor();
                 editor.onDidChangeModelContent(function (event) {
                     let value = editor.getValue();
@@ -522,6 +591,7 @@
                 this.$options.editor.focus();
             },
             destroy: function () {
+                this.suggestWidgetObserver?.disconnect();
                 this.autoCompletionProviders.forEach(provider => provider.dispose());
                 this.$options.editor?.getModel()?.dispose?.();
                 this.$options.editor?.dispose?.();
