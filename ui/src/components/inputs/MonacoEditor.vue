@@ -25,10 +25,10 @@
     import {QUOTE, YamlNoAutoCompletion} from "../../services/autoCompletionProvider.js"
     import {FlowAutoCompletion} from "override/services/flowAutoCompletionProvider.js";
     import RegexProvider from "../../utils/regex";
-    import type {Position} from "monaco-editor"
     import IModel = editor.IModel;
     import CompletionList = languages.CompletionList;
     import ProviderResult = languages.ProviderResult;
+    import CompletionItem = languages.CompletionItem;
 
     window.MonacoEnvironment = {
         getWorker(_moduleId, label) {
@@ -232,175 +232,10 @@
                 }
             }
 
-            const NO_SUGGESTIONS = {suggestions: []};
-
-            let yamlAutoCompletionProvider: YamlNoAutoCompletion;
-            if (this.schemaType === "flow") {
-                yamlAutoCompletionProvider = new FlowAutoCompletion(this.$store);
-            } else {
-                yamlAutoCompletionProvider = new YamlNoAutoCompletion();
-            }
-
-            const QUOTES = ["\"", "'"];
-            const endOfWordColumn = (position, model) => {
-                return position.column + (model.findNextMatch(RegexProvider.beforeSeparator(QUOTES), position, true, false, null, true)?.matches[0].length ?? 0);
-            }
-
-            this.autoCompletionProviders.push(monaco.languages.registerCompletionItemProvider("yaml", {
-                triggerCharacters: [":"],
-                async provideCompletionItems(model, position) {
-                    const source = model.getValue();
-                    const cursorPosition = model.getOffsetAt(position);
-                    const parsed = YAML_UTILS.parse(source, false);
-
-                    const currentWord = model.findPreviousMatch(RegexProvider.beforeSeparator(), position, true, false, null, true);
-                    const elementUnderCursor = YAML_UTILS.localizeElementAtIndex(source, cursorPosition);
-                    if (elementUnderCursor?.key === undefined) {
-                        return NO_SUGGESTIONS;
-                    }
-
-                    const parentStartLine = model.getPositionAt(elementUnderCursor.range[0]).lineNumber;
-                    const autoCompletions = await yamlAutoCompletionProvider.valueAutoCompletion(source, parsed, elementUnderCursor);
-                    return {
-                        suggestions: autoCompletions.map(autoCompletion => {
-                            const [label, isKey] = autoCompletion.split(":") as [string, string | undefined];
-                            let insertText = label;
-                            const endColumn = endOfWordColumn(position, model);
-                            if (isKey === undefined) {
-                                if (source.charAt(cursorPosition - 1) === ":") {
-                                    insertText = ` ${label}`;
-                                }
-                            } else {
-                                if (parentStartLine === position.lineNumber) {
-                                    insertText = `\n  ${label}: `;
-                                } else {
-                                    insertText = model.getLineContent(position.lineNumber).charAt(endColumn - 1) === ":" ? label : `${label}: `;
-                                }
-                            }
-                            return ({
-                                kind: isKey === undefined ? monaco.languages.CompletionItemKind.Value : monaco.languages.CompletionItemKind.Property,
-                                label,
-                                insertText: insertText,
-                                range: {
-                                    startLineNumber: position.lineNumber,
-                                    endLineNumber: position.lineNumber,
-                                    startColumn: position.column - currentWord.matches[0].length,
-                                    endColumn: endColumn
-                                }
-                            });
-                        })
-                    };
-                }
-            }));
-
-            const propertySuggestion = (value: string, position: Position, kind?: monaco.languages.CompletionItemKind) => {
-                let label = value.split("(")[0];
-                if (label.startsWith(QUOTE) && label.endsWith(QUOTE)) {
-                    label = label.substring(1, label.length - 1);
-                }
-
-                return ({
-                    kind: kind ?? (value.includes("(") ? monaco.languages.CompletionItemKind.Function : monaco.languages.CompletionItemKind.Property),
-                    label: label,
-                    insertText: value,
-                    insertTextRules: value.includes("${1:") ? monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet : undefined,
-                    range: {
-                        startLineNumber: position.lineNumber,
-                        endLineNumber: position.lineNumber,
-                        startColumn: position.startColumn,
-                        endColumn: position.endColumn
-                    }
-                });
-            };
-
-            this.autoCompletionProviders.push(monaco.languages.registerCompletionItemProvider(["yaml", "plaintext"], {
-                triggerCharacters: ["{"],
-                async provideCompletionItems(model, position) {
-                    // Not a subfield access
-                    const rootPebbleVariableMatcher = model.findPreviousMatch(RegexProvider.capturePebbleVarRoot + "$", position, true, false, null, true);
-                    if (rootPebbleVariableMatcher === null) {
-                        return NO_SUGGESTIONS;
-                    }
-
-                    const startOfWordColumn = position.column - rootPebbleVariableMatcher.matches[1].length;
-                    return {
-                        suggestions: (await (yamlAutoCompletionProvider.rootFieldAutoCompletion()))
-                            .map(s => propertySuggestion(s, {
-                                lineNumber: position.lineNumber,
-                                startColumn: startOfWordColumn,
-                                endColumn: endOfWordColumn(position, model)
-                            }))
-                    };
-                }
-            }));
-
-            this.autoCompletionProviders.push(monaco.languages.registerCompletionItemProvider(["yaml", "plaintext"], {
-                triggerCharacters: ["("],
-                async provideCompletionItems(model, position) {
-                    const source = model.getValue();
-                    const parsed = YAML_UTILS.parse(source, false);
-
-                    const functionMatcher = model.findPreviousMatch(RegexProvider.capturePebbleFunction + "$", position, true, false, null, true);
-                    if (functionMatcher === null) {
-                        return NO_SUGGESTIONS;
-                    }
-
-                    const wordStartOffset = functionMatcher.matches?.[3]?.length
-                        ?? model.findPreviousMatch(RegexProvider.beforeSeparator(QUOTES) + "$", position, true, false, null, true).matches[0].length;
-                    const startOfWordColumn = position.column - wordStartOffset;
-                    return {
-                        suggestions: (await yamlAutoCompletionProvider.functionAutoCompletion(
-                            parsed,
-                            functionMatcher.matches[1],
-                            Object.fromEntries(functionMatcher.matches?.[2]?.split(/ *, */)?.map(arg => arg.split(/ *= */)) ?? []))
-                        ).map(s => {
-                            const endColumn = endOfWordColumn(position, model);
-                            const suggestion = propertySuggestion(s, {
-                                lineNumber: position.lineNumber,
-                                startColumn: startOfWordColumn,
-                                endColumn: endColumn
-                            }, monaco.languages.CompletionItemKind.Value);
-
-                            // If the inserted value is a string (surrounded by quotes), we remove them if there is already one
-                            if (suggestion.insertText.startsWith(QUOTE) && suggestion.insertText.endsWith(QUOTE)) {
-                                const lineContent = model.getLineContent(position.lineNumber);
-                                suggestion.insertText = suggestion.insertText.substring(
-                                    QUOTES.includes(lineContent.charAt(startOfWordColumn - 2)) ? 1 : 0,
-                                    suggestion.insertText.length - (QUOTES.includes(lineContent.charAt(endColumn - 1)) ? 1 : 0)
-                                );
-                            }
-
-                            return suggestion;
-                        })
-                    };
-                }
-            }))
-
-            this.autoCompletionProviders.push(monaco.languages.registerCompletionItemProvider(["yaml", "plaintext"], {
-                triggerCharacters: ["."],
-                async provideCompletionItems(model, position) {
-                    const source = model.getValue();
-                    const parsed = YAML_UTILS.parse(source, false);
-
-                    const parentFieldMatcher = model.findPreviousMatch(RegexProvider.capturePebbleVarParent + "$", position, true, false, null, true);
-                    if (parentFieldMatcher === null) {
-                        return NO_SUGGESTIONS;
-                    }
-
-                    const startOfWordColumn = position.column - parentFieldMatcher.matches[2].length;
-                    return {
-                        suggestions: (await yamlAutoCompletionProvider.nestedFieldAutoCompletion(source, parsed, parentFieldMatcher.matches[1]))
-                            .map(s => propertySuggestion(s, {
-                                lineNumber: position.lineNumber,
-                                startColumn: startOfWordColumn,
-                                endColumn: endOfWordColumn(position, model)
-                            }))
-                    };
-                }
-            }));
+            await this.addKestraAutoCompletions();
 
             // Exposing functions globally for testing purposes
-            (window as any).pasteToEditor = (textToPaste:string) => {
+            (window as any).pasteToEditor = (textToPaste: string) => {
                 this.$options.editor.executeEdits("", [{range: this.$options.editor.getSelection(), text: textToPaste}])
             };
             (window as any).clearEditor = () => {
@@ -412,6 +247,186 @@
         },
         methods: {
             ...mapMutations("editor", ["setTabDirty"]),
+            async addKestraAutoCompletions() {
+                const NO_SUGGESTIONS = {suggestions: []};
+
+                let yamlAutoCompletionProvider: YamlNoAutoCompletion;
+                if (this.schemaType === "flow") {
+                    yamlAutoCompletionProvider = new FlowAutoCompletion(this.$store);
+                } else {
+                    yamlAutoCompletionProvider = new YamlNoAutoCompletion();
+                }
+
+                const QUOTES = ["\"", "'"];
+                const endOfWordColumn = (position: IPosition, model: IModel): number => {
+                    return position.column + (model.findNextMatch(
+                        RegexProvider.beforeSeparator(QUOTES),
+                        position,
+                        true,
+                        false,
+                        null,
+                        true
+                    )?.matches?.[0]?.length ?? 0);
+                }
+
+                this.autoCompletionProviders.push(monaco.languages.registerCompletionItemProvider("yaml", {
+                    triggerCharacters: [":"],
+                    async provideCompletionItems(model, position) {
+                        const source = model.getValue();
+                        const cursorPosition = model.getOffsetAt(position);
+                        const parsed = YAML_UTILS.parse(source, false);
+
+                        const currentWord = model.findPreviousMatch(RegexProvider.beforeSeparator(), position, true, false, null, true);
+                        const elementUnderCursor = YAML_UTILS.localizeElementAtIndex(source, cursorPosition);
+                        if (elementUnderCursor?.key === undefined) {
+                            return NO_SUGGESTIONS;
+                        }
+
+                        const parentStartLine = model.getPositionAt(elementUnderCursor.range![0]).lineNumber;
+                        const autoCompletions = await yamlAutoCompletionProvider.valueAutoCompletion(source, parsed, elementUnderCursor);
+                        return {
+                            suggestions: autoCompletions.map(autoCompletion => {
+                                const [label, isKey] = autoCompletion.split(":") as [string, string | undefined];
+                                let insertText = label;
+                                const endColumn = endOfWordColumn(position, model);
+                                if (isKey === undefined) {
+                                    if (source.charAt(cursorPosition - 1) === ":") {
+                                        insertText = ` ${label}`;
+                                    }
+                                } else {
+                                    if (parentStartLine === position.lineNumber) {
+                                        insertText = `\n  ${label}: `;
+                                    } else {
+                                        insertText = model.getLineContent(position.lineNumber).charAt(endColumn - 1) === ":" ? label : `${label}: `;
+                                    }
+                                }
+                                return ({
+                                    kind: isKey === undefined ? monaco.languages.CompletionItemKind.Value : monaco.languages.CompletionItemKind.Property,
+                                    label,
+                                    insertText: insertText,
+                                    range: {
+                                        startLineNumber: position.lineNumber,
+                                        endLineNumber: position.lineNumber,
+                                        startColumn: position.column - (currentWord?.matches?.[0]?.length ?? 0),
+                                        endColumn: endColumn
+                                    }
+                                });
+                            })
+                        };
+                    }
+                }));
+
+                const propertySuggestion = (value: string, position: {
+                    lineNumber: number,
+                    startColumn: number,
+                    endColumn: number
+                }, kind?: monaco.languages.CompletionItemKind): CompletionItem => {
+                    let label = value.split("(")[0];
+                    if (label.startsWith(QUOTE) && label.endsWith(QUOTE)) {
+                        label = label.substring(1, label.length - 1);
+                    }
+
+                    return ({
+                        kind: kind ?? (value.includes("(") ? monaco.languages.CompletionItemKind.Function : monaco.languages.CompletionItemKind.Property),
+                        label: label,
+                        insertText: value,
+                        insertTextRules: value.includes("${1:") ? monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet : undefined,
+                        range: {
+                            startLineNumber: position.lineNumber,
+                            endLineNumber: position.lineNumber,
+                            startColumn: position.startColumn,
+                            endColumn: position.endColumn
+                        }
+                    });
+                };
+
+                this.autoCompletionProviders.push(monaco.languages.registerCompletionItemProvider(["yaml", "plaintext"], {
+                    triggerCharacters: ["{"],
+                    async provideCompletionItems(model, position) {
+                        // Not a subfield access
+                        const rootPebbleVariableMatcher = model.findPreviousMatch(RegexProvider.capturePebbleVarRoot + "$", position, true, false, null, true);
+                        if (rootPebbleVariableMatcher === null || rootPebbleVariableMatcher.matches === null) {
+                            return NO_SUGGESTIONS;
+                        }
+
+                        const startOfWordColumn = position.column - rootPebbleVariableMatcher.matches[1].length;
+                        return {
+                            suggestions: (await (yamlAutoCompletionProvider.rootFieldAutoCompletion()))
+                                .map(s => propertySuggestion(s, {
+                                    lineNumber: position.lineNumber,
+                                    startColumn: startOfWordColumn,
+                                    endColumn: endOfWordColumn(position, model)
+                                }))
+                        };
+                    }
+                }));
+
+                this.autoCompletionProviders.push(monaco.languages.registerCompletionItemProvider(["yaml", "plaintext"], {
+                    triggerCharacters: ["("],
+                    async provideCompletionItems(model, position) {
+                        const source = model.getValue();
+                        const parsed = YAML_UTILS.parse(source, false);
+
+                        const functionMatcher = model.findPreviousMatch(RegexProvider.capturePebbleFunction + "$", position, true, false, null, true);
+                        if (functionMatcher === null || functionMatcher.matches === null) {
+                            return NO_SUGGESTIONS;
+                        }
+
+                        const wordStartOffset = functionMatcher.matches?.[3]?.length
+                            ?? (model.findPreviousMatch(RegexProvider.beforeSeparator(QUOTES) + "$", position, true, false, null, true)?.matches?.[0]?.length)
+                            ?? 0;
+                        const startOfWordColumn = position.column - wordStartOffset;
+                        return {
+                            suggestions: (await yamlAutoCompletionProvider.functionAutoCompletion(
+                                parsed,
+                                functionMatcher.matches[1],
+                                Object.fromEntries(functionMatcher.matches?.[2]?.split(/ *, */)?.map(arg => arg.split(/ *= */)) ?? []))
+                            ).map(s => {
+                                const endColumn = endOfWordColumn(position, model);
+                                const suggestion = propertySuggestion(s, {
+                                    lineNumber: position.lineNumber,
+                                    startColumn: startOfWordColumn,
+                                    endColumn: endColumn
+                                }, monaco.languages.CompletionItemKind.Value);
+
+                                // If the inserted value is a string (surrounded by quotes), we remove them if there is already one
+                                if (suggestion.insertText.startsWith(QUOTE) && suggestion.insertText.endsWith(QUOTE)) {
+                                    const lineContent = model.getLineContent(position.lineNumber);
+                                    suggestion.insertText = suggestion.insertText.substring(
+                                        QUOTES.includes(lineContent.charAt(startOfWordColumn - 2)) ? 1 : 0,
+                                        suggestion.insertText.length - (QUOTES.includes(lineContent.charAt(endColumn - 1)) ? 1 : 0)
+                                    );
+                                }
+
+                                return suggestion;
+                            })
+                        };
+                    }
+                }))
+
+                this.autoCompletionProviders.push(monaco.languages.registerCompletionItemProvider(["yaml", "plaintext"], {
+                    triggerCharacters: ["."],
+                    async provideCompletionItems(model, position) {
+                        const source = model.getValue();
+                        const parsed = YAML_UTILS.parse(source, false);
+
+                        const parentFieldMatcher = model.findPreviousMatch(RegexProvider.capturePebbleVarParent + "$", position, true, false, null, true);
+                        if (parentFieldMatcher === null || parentFieldMatcher.matches === null) {
+                            return NO_SUGGESTIONS;
+                        }
+
+                        const startOfWordColumn = position.column - parentFieldMatcher.matches[2].length;
+                        return {
+                            suggestions: (await yamlAutoCompletionProvider.nestedFieldAutoCompletion(source, parsed, parentFieldMatcher.matches[1]))
+                                .map(s => propertySuggestion(s, {
+                                    lineNumber: position.lineNumber,
+                                    startColumn: startOfWordColumn,
+                                    endColumn: endOfWordColumn(position, model)
+                                }))
+                        };
+                    }
+                }));
+            },
             /**
              * Goal of this method is to add an observer on the suggest widget to auto-resize it to fit tasks without ellipsis at first appearance.
              * It's using a MutationObserver. The observer expects two scenario:
@@ -437,20 +452,51 @@
                         this.suggestWidgetObserver?.disconnect();
                         this.suggestWidgetObserver = undefined;
 
-                        const resizerInitialCoordinates = {x: resizer.getBoundingClientRect().left, y: resizer.getBoundingClientRect().top};
+                        const resizerInitialCoordinates = {
+                            x: resizer.getBoundingClientRect().left,
+                            y: resizer.getBoundingClientRect().top
+                        };
 
-                        resizer.dispatchEvent(new MouseEvent("mouseenter", {bubbles: true, clientX: resizerInitialCoordinates.x, clientY: resizerInitialCoordinates.y}));
-                        resizer.dispatchEvent(new MouseEvent("mouseover", {bubbles: true, clientX: resizerInitialCoordinates.x, clientY: resizerInitialCoordinates.y}));
-                        resizer.dispatchEvent(new MouseEvent("mousedown", {bubbles: true, clientX: resizerInitialCoordinates.x, clientY: resizerInitialCoordinates.y}));
-                        resizer.dispatchEvent(new MouseEvent("mousemove", {bubbles: true, clientX: resizerInitialCoordinates.x + 80, clientY: resizerInitialCoordinates.y}));
-                        resizer.dispatchEvent(new MouseEvent("mouseup", {bubbles: true, clientX: resizerInitialCoordinates.x + 80, clientY: resizerInitialCoordinates.y}));
-                        resizer.dispatchEvent(new MouseEvent("mouseout", {bubbles:true, clientX: resizerInitialCoordinates.x + 80, clientY: resizerInitialCoordinates.y}));
-                        resizer.dispatchEvent(new MouseEvent("mouseleave", {bubbles: true, clientX: resizerInitialCoordinates.x + 80, clientY: resizerInitialCoordinates.y}));
+                        resizer.dispatchEvent(new MouseEvent("mouseenter", {
+                            bubbles: true,
+                            clientX: resizerInitialCoordinates.x,
+                            clientY: resizerInitialCoordinates.y
+                        }));
+                        resizer.dispatchEvent(new MouseEvent("mouseover", {
+                            bubbles: true,
+                            clientX: resizerInitialCoordinates.x,
+                            clientY: resizerInitialCoordinates.y
+                        }));
+                        resizer.dispatchEvent(new MouseEvent("mousedown", {
+                            bubbles: true,
+                            clientX: resizerInitialCoordinates.x,
+                            clientY: resizerInitialCoordinates.y
+                        }));
+                        resizer.dispatchEvent(new MouseEvent("mousemove", {
+                            bubbles: true,
+                            clientX: resizerInitialCoordinates.x + 80,
+                            clientY: resizerInitialCoordinates.y
+                        }));
+                        resizer.dispatchEvent(new MouseEvent("mouseup", {
+                            bubbles: true,
+                            clientX: resizerInitialCoordinates.x + 80,
+                            clientY: resizerInitialCoordinates.y
+                        }));
+                        resizer.dispatchEvent(new MouseEvent("mouseout", {
+                            bubbles: true,
+                            clientX: resizerInitialCoordinates.x + 80,
+                            clientY: resizerInitialCoordinates.y
+                        }));
+                        resizer.dispatchEvent(new MouseEvent("mouseleave", {
+                            bubbles: true,
+                            clientX: resizerInitialCoordinates.x + 80,
+                            clientY: resizerInitialCoordinates.y
+                        }));
                     }
 
                     const targetHtmlElement = target as HTMLElement;
                     if (targetHtmlElement.classList.contains("monaco-sash")) {
-                        if(!targetHtmlElement.classList.contains("disabled")) {
+                        if (!targetHtmlElement.classList.contains("disabled")) {
                             simulateResizeOnSashAndDisconnect(targetHtmlElement);
                         }
 
@@ -489,7 +535,10 @@
                 };
 
                 if (this.diffEditor) {
-                    this.$options.editor = monaco.editor.createDiffEditor(this.$el, {...options, ignoreTrimWhitespace: false});
+                    this.$options.editor = monaco.editor.createDiffEditor(this.$el, {
+                        ...options,
+                        ignoreTrimWhitespace: false
+                    });
                     let originalModel = monaco.editor.createModel(this.original, this.language);
                     let modifiedModel = monaco.editor.createModel(this.value, this.language);
                     this.$options.editor.setModel({
@@ -527,7 +576,7 @@
 
                     this.$options.editor = monaco.editor.create(this.$el, options);
 
-                    if(!this.input){
+                    if (!this.input) {
                         await this.changeTab(this.path, () => Promise.resolve(this.value), false);
                     }
                 }
@@ -553,7 +602,7 @@
                 setTimeout(() => monaco.editor.remeasureFonts(), 1)
                 this.$emit("editorDidMount", this.$options.editor);
             },
-            async changeTab(pathOrName:string, valueSupplier: () => Promise<string>, useModelCache = true) {
+            async changeTab(pathOrName: string, valueSupplier: () => Promise<string>, useModelCache = true) {
                 let model;
                 if (this.input || pathOrName === undefined) {
                     model = monaco.editor.createModel(
@@ -596,7 +645,7 @@
                 this.$options.editor?.getModel()?.dispose?.();
                 this.$options.editor?.dispose?.();
             },
-            needReload: function (newValue: {renderSideBySide: boolean}, oldValue: {renderSideBySide: boolean}) {
+            needReload: function (newValue: { renderSideBySide: boolean }, oldValue: { renderSideBySide: boolean }) {
                 return oldValue.renderSideBySide !== newValue.renderSideBySide;
             },
             reload: function () {
