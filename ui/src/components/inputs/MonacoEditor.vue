@@ -230,7 +230,7 @@
                         replaceRowsIcons(
                             mutations.flatMap(({addedNodes}) => {
                                 const nodes = [...addedNodes] as (Node | HTMLElement)[];
-                                const maybeRows: HTMLElement[] = nodes.filter(n => (<HTMLElement>n).classList?.contains("monaco-list-row")) as HTMLElement[];
+                                const maybeRows: HTMLElement[] = nodes.filter(n => (n as HTMLElement).classList?.contains("monaco-list-row")) as HTMLElement[];
 
                                 for(let node of nodes) {
                                     let maybeRow: HTMLElement | null = null;
