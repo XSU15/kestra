@@ -17,7 +17,8 @@
     "build-storybook": "storybook build",
     "test:storybook": "test-storybook",
     "prepare": "cd .. && husky ui/.husky && rm -f .git/hooks/*",
-    "notes": "node ./scripts/ci/generateReleaseNotes"
+    "notes": "node ./scripts/ci/generateReleaseNotes",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@js-joda/core": "^5.6.3",
@@ -117,7 +118,8 @@
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.28.0",
     "vite": "^6.2.3",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "patch-package": "^8.0.0"
   },
   "optionalDependencies": {
     "@esbuild/darwin-arm64": "^0.25.1",
