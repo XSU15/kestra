@@ -246,7 +246,6 @@
         if(!movedTabInfo.value){
             return
         }
-        console.log("drop")
 
         // find potential tab in panels.value tabs
         const potentialTabPanelIndex = panels.value.findIndex((panel) => panel.tabs.some((tab) => tab.potential));
