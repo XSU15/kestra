@@ -768,7 +768,20 @@
 <style lang="scss">
 @import "../../styles/layout/root-dark";
 
-.custom-dark-vs-theme .ks-monaco-editor .sticky-widget {
-    background-color: $input-bg;
-}
+    .custom-dark-vs-theme .ks-monaco-editor .sticky-widget {
+        background-color: $input-bg;
+    }
+    
+    .monaco-editor {
+        .monaco-scrollable-element {
+            > .scrollbar {
+                .slider {
+                    width: 13px !important;
+                    background: var(--ks-border-primary) !important;
+                    border-radius: 8px !important;
+                    border: 4px solid var(--ks-background-body) !important;
+                }
+            }
+        }
+    }
 </style>
