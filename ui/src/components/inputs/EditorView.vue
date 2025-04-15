@@ -308,7 +308,7 @@
                     :icon="ContentSave"
                     @click="onSaveNewError()"
                     type="primary"
-                    :disabled="taskErrors"
+                    :disabled="Boolean(taskErrors)"
                 >
                     {{ $t("save") }}
                 </el-button>
@@ -330,7 +330,7 @@
                     :icon="ContentSave"
                     @click="onSaveNewTrigger()"
                     type="primary"
-                    :disabled="taskErrors"
+                    :disabled="Boolean(taskErrors)"
                 >
                     {{ $t("save") }}
                 </el-button>
@@ -742,7 +742,6 @@
     });
 
     onBeforeUnmount(() => {
-        store.commit("flow/setFlowYaml", undefined);
         window.removeEventListener("resize", onResize);
 
         store.commit("plugin/setEditorPlugin", undefined);
