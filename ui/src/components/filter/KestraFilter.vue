@@ -405,7 +405,12 @@
     watchDebounced(filterQueryString, () => {
         skipRouteWatcherOnce.value = true;
         router.push({
-            query: filterQueryString.value
+            query: {
+                sort: route.query.sort,
+                size: route.query.size,
+                page: route.query.page,
+                ...filterQueryString.value
+            }
         });
     }, {immediate: true, debounce: 500});
 </script>
