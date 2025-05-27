@@ -662,16 +662,32 @@
             }
         },
         beforeRouteEnter(to, from, next) {
-            const defaultNamespace = localStorage.getItem(storageKeys.DEFAULT_NAMESPACE);
+            const defaultNamespace = localStorage.getItem(
+                storageKeys.DEFAULT_NAMESPACE,
+            );
             const query = {...to.query};
-            if (defaultNamespace) {
-                query.namespace = defaultNamespace;
-            } if (!query.scope) {
-                query.scope = defaultNamespace === "system" ? ["SYSTEM"] : ["USER"];
+            let queryHasChanged = false;
+
+            const queryKeys = Object.keys(query);
+            if (defaultNamespace && !queryKeys.some(key => key.startsWith("filters[namespace]"))) {
+                query["filters[namespace][EQUALS]"] = defaultNamespace;
+                queryHasChanged = true;
             }
-            next(vm => {
-                vm.$router?.replace({query});
-            });
+
+            if (!queryKeys.some(key => key.startsWith("filters[scope]"))) {
+                query["filters[scope][EQUALS]"] = "USER";
+                queryHasChanged = true;
+            }
+
+            if (queryHasChanged) {
+                next({
+                    ...to,
+                    query,
+                    replace: true
+                });
+            } else {
+                next();
+            }
         },
         methods: {
             filteredLabels(labels) {
