@@ -207,6 +207,7 @@
                 }).join(" ");
         } else {
             filter.value = Object.entries(query)
+                .filter(([key]) => key.startsWith("filters["))
                 .flatMap(([key, values]) => {
                     const [_, filterKey, comparator, subKey] = key.match(/filters\[([^\]]+)]\[([^\]]+)](?:\[([^\]]+)])?/) ?? [];
                     let maybeSubKeyString;
