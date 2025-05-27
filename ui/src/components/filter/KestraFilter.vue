@@ -1,5 +1,5 @@
 <template>
-    <section class="d-flex flex-column mb-3">
+    <section class="d-flex flex-column mb-3 w-100">
         <div class="d-flex">
             <Items :prefix="itemsPrefix" @search="handleClickedItems" />
 
