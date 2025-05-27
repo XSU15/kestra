@@ -80,7 +80,7 @@
     import RefreshButton from "../layout/RefreshButton.vue";
     import Dashboards from "./segments/Dashboards.vue";
     import Properties from "./segments/Properties.vue";
-    import {COMPARATOR_CHARS} from "../../composables/monaco/languages/filters/filterLanguageConfigurator.ts";
+    import {COMPARATORS_REGEX} from "../../composables/monaco/languages/filters/filterLanguageConfigurator.ts";
     import {Comparators, getComparator} from "../../composables/monaco/languages/filters/filterCompletion.ts";
     import {watchDebounced} from "@vueuse/core";
 
@@ -242,11 +242,10 @@
             return {};
         }
 
-        const JOINED_COMPARATOR_CHARS = COMPARATOR_CHARS.join("");
-        const KEY_MATCHER = "([^\\s" + JOINED_COMPARATOR_CHARS + "]+)";
-        const COMPARATOR_MATCHER = "([" + JOINED_COMPARATOR_CHARS + "]+)";
-        const MAYBE_PREVIOUS_VALUE = "(?:(?<=[^\\s" + JOINED_COMPARATOR_CHARS + "]),)?";
-        const VALUE_MATCHER = "((?:" + MAYBE_PREVIOUS_VALUE + "(?:(?:\"[^\\n," + JOINED_COMPARATOR_CHARS + "]+\")|(?:[^\\s," + JOINED_COMPARATOR_CHARS + "]+)))+)";
+        const KEY_MATCHER = "(\\S+?)";
+        const COMPARATOR_MATCHER = "(" + COMPARATORS_REGEX + ")";
+        const MAYBE_PREVIOUS_VALUE = "(?:(?<=\\S),)?";
+        const VALUE_MATCHER = "((?:" + MAYBE_PREVIOUS_VALUE + "(?:(?:\"[^\\n,]+\")|(?:[^\\s,]+)))+)";
         const filterMatcher = new RegExp("\\s*" + KEY_MATCHER + COMPARATOR_MATCHER + VALUE_MATCHER + "\\s*", "g");
         let matches: RegExpExecArray | null;
         const filters: Filter[] = [];
