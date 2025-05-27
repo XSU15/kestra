@@ -53,8 +53,8 @@
                         >
                             <div class="left">
                                 <div class="blueprint">
-                                    <div 
-                                        class="ps-0 title" 
+                                    <div
+                                        class="ps-0 title"
                                         :class="{'embed-title': embed, 'text-truncate': embed}"
                                     >
                                         {{ blueprint.title ?? blueprint.id }}
@@ -440,7 +440,7 @@
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
-                        
+                        font-weight: 400;
                     }
 
                     .tags {
