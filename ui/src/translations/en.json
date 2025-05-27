@@ -1335,6 +1335,14 @@
     "searching": "Searching...",
     "worker information": "Worker Information",
     "test-badge-text": "Test",
-    "test-badge-tooltip": "This execution was created by a Test"
+    "test-badge-tooltip": "This execution was created by a Test",
+    "no_results": {
+      "executions": "No Executions Found",
+      "triggers": "No Triggers Found",
+      "flows": "No Flows Found",
+      "kv_pairs": "No Key-Value pairs Found",
+      "secrets": "No Secrets Found",
+      "templates": "No Templates Found"
+    }
   }
 }
