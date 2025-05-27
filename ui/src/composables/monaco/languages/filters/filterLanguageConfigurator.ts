@@ -215,11 +215,11 @@ export default class FilterLanguageConfigurator extends AbstractLanguageConfigur
                         );
                     }
 
-                    const previousColumn = wordAtPosition.startColumn - 1;
+                    const previousColumn = wordAtPosition.startColumn;
                     const beforeWordPosition = previousColumn > 0
                         ? position.with(undefined, previousColumn)
                         : undefined;
-                    const charBeforeCurrentWord = beforeWordPosition === undefined ? "" : modelValue.charAt(model.getOffsetAt(beforeWordPosition));
+                    const charBeforeCurrentWord = beforeWordPosition === undefined ? "" : modelValue.charAt(model.getOffsetAt(beforeWordPosition) - 1);
 
                     if (
                         COMPARATOR_CHARS.includes(previousChar)
