@@ -9,7 +9,7 @@
                 :md="(chart.chartOptions?.width || 6) * 2"
             >
                 <div class="d-flex flex-column">
-                    <p v-if="chart.type !== 'io.kestra.plugin.core.dashboard.chart.KPI'" class="m-0">
+                    <p v-if="chart.type !== 'io.kestra.plugin.core.dashboard.chart.KPI'">
                         <span class="fs-6 fw-bold">{{ labels(chart).title }}</span>
                         <template v-if="labels(chart)?.description">
                             <br>
@@ -72,7 +72,7 @@
 section#charts {
 
     & .el-row .el-col {
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
 
         & > div {
             height: 100%;
@@ -80,6 +80,7 @@ section#charts {
             background: var(--ks-background-card);
             border: 1px solid var(--ks-border-primary);
             border-radius: $border-radius;
+            box-shadow: 0px 2px 4px 0px var(--ks-card-shadow);
         }
     }
 }
