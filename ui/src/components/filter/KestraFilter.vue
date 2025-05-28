@@ -190,11 +190,6 @@
             );
         }
 
-        query = Object.fromEntries(
-            Object.entries(query)
-                .map(([key, value]) => ([queryRemapper?.[key] ?? key, value]))
-        );
-
         if (props.legacyQuery) {
             /*
             TODO Known issue: the autocompletion for legacy queries is filling the first comparator found while the query retrieval is using EQUALS
@@ -206,7 +201,7 @@
                         values = [values];
                     }
 
-                    return values.map(value => key + Comparators.EQUALS + value);
+                    return values.map(value => (queryRemapper?.[key] ?? key) + Comparators.EQUALS + value);
                 }).join(" ");
         } else {
             filter.value = Object.entries(query)
@@ -224,7 +219,7 @@
                         values = [values];
                     }
 
-                    return values.map(value => filterKey + maybeSubKeyString + getComparator(comparator as Parameters<typeof getComparator>[0]) + value);
+                    return values.map(value => (queryRemapper?.[filterKey] ?? filterKey) + maybeSubKeyString + getComparator(comparator as Parameters<typeof getComparator>[0]) + value);
                 })
                 .join(" ");
         }
