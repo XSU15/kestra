@@ -61,15 +61,27 @@ export default class FilterLanguageConfigurator extends AbstractLanguageConfigur
                     root: [
                         [/[\w\\.]+/, {
                             cases: {
-                                [this.keyCompletionsRegex!.source]: {token: "variable.name", next: "@comparator"},
-                                "@default": "invalid"
+                                [this.keyCompletionsRegex!.source]: {
+                                    token: "variable.name",
+                                    next: "@comparator"
+                                },
+                                "@default": {token: "@rematch", next: "@rawText"}
                             }
-                        }]
+                        }],
+                        [/[^\w\\.]/, {token: "invalid", next: "@whitespace"}]
                     ],
                     comparator: [
                         [/@symbols/, {
                             cases: {
                                 "@operators": {token: "operators", next: "@value"}
+                            }
+                        }]
+                    ],
+                    rawText: [
+                        [/\S+/, {
+                            cases: {
+                                [`(?:(?!${COMPARATORS_REGEX})\\S(?!${COMPARATORS_REGEX}))*`]: {token: "variable.value", next: "@whitespace"},
+                                "@default": {token: "invalid", next: "@whitespace"}
                             }
                         }]
                     ],
@@ -84,9 +96,14 @@ export default class FilterLanguageConfigurator extends AbstractLanguageConfigur
                             next: "@separator"
                         }]
                     ],
-                    separator: [
+                    whitespace: [
                         [/\s+/, {token: "space", next: "@popall"}],
-                        [",", {token: "comma", next: "@value"}]
+                        [/\S+/, {token: "invalid"}]
+                    ],
+                    separator: [
+                        {include: "@whitespace"},
+                        [",", {token: "comma", next: "@value"}],
+                        [/\S+/, {token: "invalid"}]
                     ]
                 }
             });
@@ -204,7 +221,11 @@ export default class FilterLanguageConfigurator extends AbstractLanguageConfigur
                         if (previousChar === ".") {
                             return TO_SUGGESTIONS(
                                 position,
-                                {word: "", startColumn: wordAtPosition.endColumn, endColumn: wordAtPosition.endColumn},
+                                {
+                                    word: "",
+                                    startColumn: wordAtPosition.endColumn,
+                                    endColumn: wordAtPosition.endColumn
+                                },
                                 []
                             );
                         }

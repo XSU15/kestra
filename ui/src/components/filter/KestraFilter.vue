@@ -224,7 +224,7 @@
                 .join(" ");
         }
 
-        filter.value = filter.value + " "; // Add a trailing space to allow for autocompletion to work properly
+        filter.value = filter.value.length > 0 ? (filter.value + " ") : filter.value; // Add a trailing space to allow for autocompletion to work properly
     }, {immediate: true, deep: true});
 
     const COMPARATOR_LABEL_BY_VALUE: Record<Comparators, keyof typeof Comparators> = Object.fromEntries(
@@ -242,17 +242,28 @@
             return {};
         }
 
-        const KEY_MATCHER = "(\\S+?)";
+        const KEY_MATCHER = "((?:(?<!" + COMPARATORS_REGEX + ")\\S)+?)";
         const COMPARATOR_MATCHER = "(" + COMPARATORS_REGEX + ")";
         const MAYBE_PREVIOUS_VALUE = "(?:(?<=\\S),)?";
         const VALUE_MATCHER = "((?:" + MAYBE_PREVIOUS_VALUE + "(?:(?:\"[^\\n,]+\")|(?:[^\\s,]+)))+)";
-        const filterMatcher = new RegExp("\\s*" + KEY_MATCHER + COMPARATOR_MATCHER + VALUE_MATCHER + "\\s*", "g");
+        const filterMatcher = new RegExp("\\s*(?<!\\S)((?:" + KEY_MATCHER + COMPARATOR_MATCHER + VALUE_MATCHER + ")|(?:(?!" + COMPARATORS_REGEX + ")\\S(?!" + COMPARATORS_REGEX + "))+)(?!\\S)\\s*", "g");
         let matches: RegExpExecArray | null;
         const filters: Filter[] = [];
         while ((matches = filterMatcher.exec(filter.value)) !== null) {
-            const key = matches[1];
-            const comparator = matches[2] as Comparators;
-            const values = [...new Set(matches[3].split(",").filter(value => value !== "").map(value => value.replaceAll("\"", "")))];
+            const key = matches[2];
+
+            // If we're not in a {key}{comparator}{value} format, we assume it's a text search
+            if (key === undefined) {
+                filters.push({
+                    key: "text",
+                    comparator: "EQUALS",
+                    value: matches[1]
+                });
+                continue;
+            }
+
+            const comparator = matches[3] as Comparators;
+            const values = [...new Set(matches[4].split(",").filter(value => value !== "").map(value => value.replaceAll("\"", "")))];
 
             let comparatorLabel: keyof typeof Comparators | "IN" | "NOT_IN" = COMPARATOR_LABEL_BY_VALUE[comparator];
             if (values.length > 1) {
