@@ -75,6 +75,8 @@ public record QueryFilter(
                 return Contains.<T>builder().field(field).value(value.toString()).build();
             case REGEX:
                 return Regex.<T>builder().field(field).value(value.toString()).build();
+            case STARTS_WITH_NAMESPACE_PREFIX:
+                return Regex.<T>builder().field(field).value("^" + value.toString().replace(".", "\\.") + "(?:\\..+)?$").build();
             default:
                 throw new IllegalArgumentException("Unsupported operation: " + this.operation);
         }
