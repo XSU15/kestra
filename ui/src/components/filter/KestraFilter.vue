@@ -276,6 +276,9 @@
             }
 
             const values = [...new Set(commaSeparatedValues?.split(",")?.filter(value => value !== "")?.map(value => value.replaceAll("\"", "")) ?? [])];
+            if (values.length === 0) {
+                continue; // Skip empty values
+            }
 
             let comparatorLabel: keyof typeof Comparators | "IN" | "NOT_IN" = COMPARATOR_LABEL_BY_VALUE[comparator as Comparators];
             if (values.length > 1) {
