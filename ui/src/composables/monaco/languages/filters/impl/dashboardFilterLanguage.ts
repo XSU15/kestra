@@ -46,7 +46,7 @@ class DashboardFilterLanguage extends FilterLanguage {
     static readonly INSTANCE = new DashboardFilterLanguage();
 
     private constructor() {
-        super("dashboards", dashboardFilterKeys);
+        super("dashboards", dashboardFilterKeys, false);
     }
 }
 
