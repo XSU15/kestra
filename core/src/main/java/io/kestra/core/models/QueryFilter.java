@@ -89,7 +89,7 @@ public record QueryFilter(
         QUERY("q") {
             @Override
             public List<Op> supportedOp() {
-                return List.of(Op.EQUALS, Op.NOT_EQUALS, Op.REGEX);
+                return List.of(Op.EQUALS, Op.NOT_EQUALS);
             }
         },
         SCOPE("scope") {
