@@ -46,7 +46,7 @@
     import PlaceholderContentWidget from "../../composables/monaco/PlaceholderContentWidget.ts";
     import {hashCode} from "../../utils/global.ts";
     import ICodeEditor = editor.ICodeEditor;
-    import CursorChangeReason = editor.CursorChangeReason;
+    import debounce from "lodash/debounce";
 
     const store = useStore();
     const currentInstance = getCurrentInstance()!;
@@ -647,12 +647,12 @@
                     }
                 });
 
-                localEditor.onDidChangeCursorPosition((e) => {
-                    if (e.reason !== CursorChangeReason.NotSet && suggestController.model.state !== 0) {
+                localEditor.onDidChangeCursorPosition(debounce(() => {
+                    if (suggestController.model.state !== 0) {
                         suggestController.cancelSuggestWidget();
                         localEditor!.trigger("refreshSuggestionsOnCursorMove", "editor.action.triggerSuggest", {});
                     }
-                })
+                }, 300))
             }
 
             if (!props.input) {
