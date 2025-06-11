@@ -1,11 +1,11 @@
 <template>
-    <button @click="emits('add', props.what)" class="py-2 adding">
+    <div type="button" @click="emits('add', props.what)" class="py-2 adding">
         {{
             props.what
                 ? t("no_code.adding", {what: props.what})
                 : t("no_code.adding_default")
         }}
-    </button>
+    </div>
 </template>
 
 <script setup lang="ts">
