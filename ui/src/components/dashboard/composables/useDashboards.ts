@@ -49,8 +49,8 @@ export const STORAGE_KEYS = (params: RouteParams) => {
 
     return {
         DASHBOARD_MAIN: `dashboard_main${suffix}`,
-        DASHBOARD_NAMESPACE: `dashboard_namespace${suffix}`,
         DASHBOARD_FLOW: `dashboard_flow${suffix}`,
+        DASHBOARD_NAMESPACE: `dashboard_namespace${suffix}`,
     };
 };
 
@@ -124,9 +124,9 @@ export function useChartGenerator(props: {chart: Chart; filters: string[]; showD
         return data.value;
     };
 
-    onMounted(() => generate(route.params.id as string));
+    onMounted(() => generate(getDashboardID(route) as string));
 
-    watch(route, (changed) => generate(changed.params.id as string));
+    watch(route, (changed) => generate(getDashboardID(changed) as string), {deep: true});
 
     return {percentageShown, EMPTY_TEXT, data, generate};
 }
