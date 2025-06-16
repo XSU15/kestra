@@ -65,6 +65,10 @@
 
     const internalPairs = ref<[string, string | undefined][]>([])
 
+    // this flag will avoid updating the modelValue when the
+    // change was initiated in the component itself
+    const localEdit = ref(false);
+
     const duplicatedKeys = computed(() => {
         return internalPairs.value.map(pair => pair[0])
             .filter((key, index, self) =>
@@ -88,7 +92,7 @@
     watch(() => props.modelValue, (newValue) => {
         // If the alert is visible, we don't want to update the pairs
         // because it would delete problem line silently.
-        if (alertState.value.visible) {
+        if (alertState.value.visible || localEdit.value) {
             return;
         }
         internalPairs.value = Object.entries(newValue || {});
@@ -100,7 +104,8 @@
 
 
     function updateModel() {
-        emit("update:modelValue", Object.fromEntries(internalPairs.value));
+        localEdit.value = true;
+        emit("update:modelValue", Object.fromEntries(internalPairs.value.filter(pair => pair[0] !== "" && pair[1] !== undefined)));
     }
 
     function handleKeyInput(index: number, newValue: string) {
