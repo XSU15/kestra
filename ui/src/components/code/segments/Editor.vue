@@ -109,6 +109,7 @@
 
     import {useStore} from "vuex";
     import TaskWrapper from "../../flows/tasks/TaskWrapper.vue";
+    import {usePluginsStore} from "../../../stores/plugins";
     import {removeNullAndUndefined} from "../utils/cleanUp";
     const store = useStore();
 
@@ -164,8 +165,12 @@
         $ref?: string,
     }>({})
 
+    const pluginStore = usePluginsStore();
+
+    pluginStore.setVuexStore(store);
+
     onMounted(async () => {
-        await store.dispatch("plugin/loadSchemaType").then((response) => {
+        await pluginStore.loadSchemaType().then((response) => {
             schema.value = response;
         })
     });
