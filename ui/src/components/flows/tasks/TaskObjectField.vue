@@ -1,5 +1,13 @@
 <template>
-    <el-form-item v-if="fieldKey" :required="isRequired">
+    <component
+        v-if="simpleType === 'list'"
+        ref="taskComponent"
+        :is="type"
+        v-bind="{...componentProps}"
+        :disabled
+        class="mt-1 mb-2 wrapper"
+    />
+    <el-form-item v-else-if="fieldKey" :required="isRequired">
         <template #label>
             <div class="inline-wrapper">
                 <div class="inline-start">
@@ -82,7 +90,7 @@
     const taskComponent = templateRef<{resetSelectType?: () => void}>("taskComponent");
 
     const isRequired = computed(() => {
-        return !props.disabled && props.required?.includes(props.fieldKey) && props.schema.$required;
+        return !props.disabled && props.required?.includes(props.fieldKey);// && props.schema.$required;
     })
 
     const componentProps = computed(() => {
