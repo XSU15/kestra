@@ -133,7 +133,7 @@
         "Task błędów będą wykonane."
       ],
       "RUNNING": [
-        "Flow zostanie ponownie uruchomiony i wykona wszystkie następne taski.",
+        "Flow zostanie ponownie uruchomiony i wykona wszystkie kolejne taski.",
         "Wszystkie zablokowane taski zostaną wykonane."
       ],
       "SUCCESS": [

@@ -133,7 +133,7 @@
         "Die Fehler-Tasks werden ausgeführt."
       ],
       "RUNNING": [
-        "Der Flow wird neu gestartet und alle nächsten Tasks werden ausgeführt.",
+        "Der flow wird neu gestartet und alle nächsten Tasks werden ausgeführt.",
         "Alle blockierten Tasks werden ausgeführt."
       ],
       "SUCCESS": [
