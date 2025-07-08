@@ -10,7 +10,6 @@ declare module "@vue/runtime-core" {
         auth:any
         graph:any
         editor:any
-        doc:any
         code:any
     }
 

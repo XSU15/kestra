@@ -7,7 +7,6 @@ import namespace from "./namespaces"
 import misc from "./miscs"
 import template from "./template"
 import editor from "./editor";
-import doc from "./doc";
 import service from "./service"
 
 export default {
@@ -21,7 +20,6 @@ export default {
         auth,
         graph,
         editor,
-        doc,
         service,
     }
 }
