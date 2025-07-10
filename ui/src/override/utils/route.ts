@@ -21,8 +21,12 @@ export const apiUrl = (_: Store<any>) => {
     if(!login || !password) {
         return `${baseUrl}${basePath()}`
     }
-    const baseUrlParsed = new URL(baseUrl); // Validate baseUrl
-    return `${baseUrlParsed.protocol}//${login}:${password}@${baseUrlParsed.host}${basePath()}`
+    try {
+        const {protocol, host} = new URL(baseUrl); // Validate baseUrl
+        return `${protocol}//${login}:${password}@${host}${basePath()}`
+    } catch {
+        return `${baseUrl}${basePath()}`;
+    }
 }
 
 export const apiUrlWithoutTenants = () => `${baseUrl}/api/v1`
