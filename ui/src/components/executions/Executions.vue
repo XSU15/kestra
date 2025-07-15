@@ -760,11 +760,12 @@
             durationFrom(item) {
                 return (+new Date() - new Date(item.state.startDate).getTime()) / 1000
             },
-            genericConfirmAction(toast, queryAction, byIdAction, success) {
+            genericConfirmAction(toast, queryAction, byIdAction, success, showCancelButton = true) {
                 this.$toast().confirm(
                     this.$t(toast, {"executionCount": this.queryBulkAction ? this.total : this.selection.length}),
                     () => this.genericConfirmCallback(queryAction, byIdAction, success),
-                    () => {}
+                    () => {},
+                    showCancelButton
                 );
             },
             genericConfirmCallback(queryAction, byIdAction, success, params) {
@@ -806,7 +807,8 @@
                     "bulk resume",
                     "execution/queryResumeExecution",
                     "execution/bulkResumeExecution",
-                    "executions resumed"
+                    "executions resumed",
+                    false
                 );
             },
             pauseExecutions() {
