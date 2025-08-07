@@ -8,6 +8,7 @@ import {editorViewTypes} from "../utils/constants";
 import {apiUrl} from "override/utils/route";
 import {useCoreStore} from "./core";
 import {useEditorStore} from "./editor";
+import {useNamespacesStore} from "override/stores/namespaces";
 
 import {transformResponse} from "../components/dependencies/composables/useDependencies"
 
@@ -98,7 +99,8 @@ export default {
             } else {
                 if(!currentTab?.dirty) return;
 
-                await dispatch("namespace/createFile", {
+                const namespacesStore = useNamespacesStore();
+                await namespacesStore.createFile({
                     namespace: namespace ?? state.flow.namespace,
                     path: currentTab.path ?? currentTab.name,
                     content,
