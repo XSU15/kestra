@@ -1,7 +1,7 @@
 <template>
     <el-dropdown v-if="enabled" placement="bottom-end">
         <el-button type="default" :icon="Circle" @click="kill(true)">
-            {{ $t("kill") }}
+            {{ t("kill") }}
         </el-button>
         <template #dropdown>
             <el-dropdown-menu class="m-dropdown-menu">
@@ -10,14 +10,14 @@
                     size="large"
                     @click="kill(true)"
                 >
-                    {{ $t('kill parents and subflow') }}
+                    {{ t('kill parents and subflow') }}
                 </el-dropdown-item>
                 <el-dropdown-item
                     :icon="StopCircleOutline"
                     size="large"
                     @click="kill(false)"
                 >
-                    {{ $t('kill only parents') }}
+                    {{ t('kill only parents') }}
                 </el-dropdown-item>
             </el-dropdown-menu>
         </template>
@@ -26,14 +26,13 @@
 <script setup lang="ts">
     import {computed} from "vue";
     import {useI18n} from "vue-i18n";
-    import {useStore} from "vuex";
-
     import Circle from "vue-material-design-icons/Circle.vue";
     import StopCircleOutline from "vue-material-design-icons/StopCircleOutline.vue";
 
     import {State} from "@kestra-io/ui-libs";
 
     import {useExecutionsStore} from "../../stores/executions";
+    import {useAuthStore} from "override/stores/auth";
     import {useToast} from "../../utils/toast";
     import action from "../../models/action";
     import permission from "../../models/permission";
@@ -46,11 +45,11 @@
     });
 
     const {t} = useI18n();
-    const store = useStore();
+    const authStore = useAuthStore();
     const executionsStore = useExecutionsStore();
     const toast = useToast();
 
-    const user = computed(() => store.state.auth.user);
+    const user = computed(() => authStore.user);
 
     const enabled = computed(() => {
         if (!(user.value && user.value.isAllowed(permission.EXECUTION, action.DELETE, props.execution.namespace))) {
@@ -82,7 +81,7 @@
     }
     .m-dropdown-menu {
         width: fit-content !important;
-        
+
         :deep(.el-dropdown-menu__item:hover) {
             background-color: var(--ks-log-background-error) !important;
             color: var(--ks-content-error) !important;

@@ -11,7 +11,7 @@
         remote
         remote-show-suffix
         :remote-method="onSearch"
-        :placeholder="$t('namespaces')"
+        :placeholder="t('namespaces')"
     >
         <template #tag>
             <el-tag
@@ -36,9 +36,12 @@
 
 <script setup lang="ts">
     import {computed, onMounted} from "vue"
+    import {useI18n} from "vue-i18n"
     import {useNamespacesStore} from "override/stores/namespaces"
     import DotsSquare from "vue-material-design-icons/DotsSquare.vue"
     import {storageKeys} from "../../../utils/constants";
+
+    const {t} = useI18n();
 
     withDefaults(defineProps<{
         multiple?: boolean,
@@ -60,12 +63,12 @@
 
     const options = computed(() => {
         return namespacesStore.autocomplete === undefined ? [] : namespacesStore.autocomplete
-            .map(value => {
+            .map((value: any) => {
                 return {id: value, label: value}
             })
     })
 
-    const onSearch = (search) => {
+    const onSearch = (search: string) => {
         namespacesStore.loadAutocomplete({
             q: search,
             ids: modelValue.value as string[] ?? [],
