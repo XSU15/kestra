@@ -319,7 +319,7 @@
         },
         methods: {
             canUpdate(kv: {namespace: string}) {
-                return kv.namespace !== undefined && this.authStore.user.isAllowed(permission.KVSTORE, action.UPDATE, kv.namespace)
+                return kv.namespace !== undefined && this.authStore.user?.isAllowed(permission.KVSTORE, action.UPDATE, kv.namespace)
             },
             canDelete(kv: {namespace: string}) {
                 return kv.namespace !== undefined && this.authStore.user?.isAllowed(permission.KVSTORE, action.DELETE, kv.namespace)
@@ -352,7 +352,7 @@
 
                     const namespaces = (await ((this.namespaceIterator as NamespaceIterator).next())).map(n => n.id);
                     if (namespaces.length !== 0) {
-                        const kvsPromises = Promise.all(namespaces.filter(n => this.user.isAllowed(permission.KVSTORE, action.READ, n)).map(async n => {
+                        const kvsPromises = Promise.all(namespaces.filter(n => this.authStore.user?.isAllowed(permission.KVSTORE, action.READ, n)).map(async n => {
                             const kvs = await this.namespacesStore.kvsList({id: n});
 
                             return kvs.map(kv => {
