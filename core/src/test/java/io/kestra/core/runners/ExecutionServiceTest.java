@@ -346,7 +346,7 @@ class ExecutionServiceTest {
     @Test
     @LoadFlows({"flows/valids/pause.yaml"})
     void resumePausedToRunning() throws Exception {
-        Execution execution = runnerUtils.runOneUntilPaused(MAIN_TENANT, "io.kestra.tests", "pause");
+        Execution execution = runnerUtils.runOneUntilPaused(MAIN_TENANT, "io.kestra.tests", "pause-test");
         Flow flow = flowRepository.findByExecution(execution);
 
         assertThat(execution.getTaskRunList()).hasSize(1);
@@ -366,7 +366,7 @@ class ExecutionServiceTest {
     @Test
     @LoadFlows({"flows/valids/pause.yaml"})
     void resumePausedToKilling() throws Exception {
-        Execution execution = runnerUtils.runOneUntilPaused(MAIN_TENANT, "io.kestra.tests", "pause");
+        Execution execution = runnerUtils.runOneUntilPaused(MAIN_TENANT, "io.kestra.tests", "pause-test");
         Flow flow = flowRepository.findByExecution(execution);
 
         assertThat(execution.getTaskRunList()).hasSize(1);
