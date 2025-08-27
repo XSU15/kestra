@@ -25,8 +25,6 @@ In the meantime, you can move onto the next step...
 
 ### Development:
 
-- Create a `.env.development.local` file in the `ui` folder and paste the following:
-
 - Navigate into the `ui` folder and run `npm install` to install the dependencies for the frontend project.
 
 - Now go to the `cli/src/main/resources` folder and create a `application-override.yml` file.
