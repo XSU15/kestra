@@ -537,16 +537,6 @@ public class DefaultRunContext extends RunContext {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public String tenantId() {
-        Map<String, String> flow = (Map<String, String>) this.getVariables().get("flow");
-        // normally only tests should not have the flow variable
-        return flow != null ? flow.get("tenantId") : null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public TaskRunInfo taskRunInfo() {
         Optional<Map<String, Object>> maybeTaskRunMap = Optional.ofNullable(this.getVariables().get("taskrun"))
             .map(Map.class::cast);
