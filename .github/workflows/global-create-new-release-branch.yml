@@ -65,7 +65,7 @@ jobs:
 
           # Create and push release branch
           git checkout -b "$PUSH_RELEASE_BRANCH";
-          git push -u origin "$PUSH_RELEASE_BRANCH";
+          git push -u origin "$PUSH_RELEASE_BRANCH" || true;
 
           # Run gradle release
           git checkout develop;
