@@ -574,7 +574,7 @@ class ExecutionControllerTest {
             .build();
 
         client.toBlocking().retrieve(
-            HttpRequest.POST("/api/v1/main/flows", create),
+            HttpRequest.POST("/api/v1/main/flows", create.sourceOrGenerateIfNull()).contentType(MediaType.APPLICATION_YAML_TYPE),
             Flow.class
         );
 
