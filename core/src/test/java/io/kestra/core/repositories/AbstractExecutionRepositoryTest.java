@@ -22,6 +22,7 @@ import io.kestra.core.models.flows.State;
 import io.kestra.core.models.flows.State.Type;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.ResolvedTask;
+import io.kestra.core.models.triggers.TriggerId;
 import io.kestra.core.repositories.ExecutionRepositoryInterface.ChildFilter;
 import io.kestra.core.utils.IdUtils;
 import io.kestra.core.utils.NamespaceUtils;
@@ -39,6 +40,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.event.Level;
+import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -1224,5 +1226,29 @@ inject(tenant);
             executionRepository.delete(savedB);
         }
     }
+    
+    @Test
+    protected void shouldFindExecutionByTrigger() {
+        // GIVEN
+        String tenant = TestsUtils.randomTenant(this.getClass().getSimpleName());
+        Execution execution = ExecutionFixture.EXECUTION_1(tenant);
 
+        TriggerId trigger = TriggerId.of(execution.getTenantId(), execution.getNamespace(), execution.getFlowId(), "trigger");
+        
+        execution = execution
+            .toBuilder()
+            .trigger(ExecutionTrigger
+                .builder()
+                .id(trigger.uid())
+                .build()
+            )
+            .build();
+        executionRepository.save(execution);
+
+        // WHEN
+        Flux<Execution> flux = executionRepository.findAllByTrigger(trigger);
+
+        // THEN
+        assertThat(flux.collectList().block()).map(Execution::getId).isEqualTo(List.of(execution.getId()));
+    }
 }
