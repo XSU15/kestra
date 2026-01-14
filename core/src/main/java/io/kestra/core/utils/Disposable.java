@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p>
  */
 public interface Disposable {
-    
+
     /**
      * Disposes this object by running its associated cleanup action.
      * <p>
@@ -22,7 +22,7 @@ public interface Disposable {
      * After the first successful call, subsequent invocations have no effect.
      */
     void dispose();
-    
+
     /**
      * Returns whether this {@code Disposable} has already been disposed.
      *
@@ -30,7 +30,7 @@ public interface Disposable {
      *         {@code false} otherwise
      */
     boolean isDisposed();
-    
+
     /**
      * Creates a new {@code Disposable} from a list of disposable.
      *
@@ -40,7 +40,7 @@ public interface Disposable {
     static Disposable of(List<Disposable> disposables) {
         return of(() -> disposables.forEach(Disposable::dispose));
     }
-    
+
     /**
      * Creates a new {@code Disposable} from the given {@link Runnable} action.
      * <p>
@@ -55,25 +55,25 @@ public interface Disposable {
     static Disposable of(final Runnable action) {
         return new FromRunnable(action);
     }
-    
+
     /**
      * Simple {@link Disposable} implementation that runs a given {@link Runnable} on {@link #dispose()} invocation.
      */
     class FromRunnable implements Disposable {
         private final AtomicBoolean disposed = new AtomicBoolean(false);
         private final Runnable action;
-        
+
         FromRunnable(final Runnable action) {
             this.action = Objects.requireNonNull(action, "action must not be null");
         }
-        
+
         @Override
         public void dispose() {
             if (disposed.compareAndSet(false, true)) {
                 action.run();
             }
         }
-        
+
         @Override
         public boolean isDisposed() {
             return disposed.get();
