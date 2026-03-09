@@ -362,7 +362,7 @@ public class TestRunnerUtils {
     public Execution awaitChildExecution(Flow flow, Execution parentExecution, Duration duration) throws QueueException {
         try {
 
-            if (duration == null){
+            if (duration == null) {
                 duration = Duration.ofSeconds(20);
             }
             return Await.until(() -> {
@@ -388,6 +388,8 @@ public class TestRunnerUtils {
                 throw new RuntimeException("No child execution for parent execution %s exist in the database".formatted(parentExecution.getId()));
             }
         }
+    }
+
     public Execution emitAndAwaitChildExecution(Flow flow, Execution parentExecution, Execution execution, Duration duration) throws QueueException {
         return this.emitAndAwaitExecution(isTerminatedChildExecution(parentExecution, flow), execution, duration);
     }

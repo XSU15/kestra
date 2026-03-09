@@ -157,6 +157,7 @@ public class RestartCaseTest {
         Execution finishedRestartedExecution = runnerUtils.emitAndAwaitChildExecution(
             flow,
             firstExecution,
+            restartedExec.withTenantId(MAIN_TENANT),
             Duration.ofSeconds(60)
         );
 
@@ -346,6 +347,7 @@ public class RestartCaseTest {
         Execution finalReplayedExecution = runnerUtils.emitAndAwaitChildExecution(
             flow,
             firstExecution,
+            replayedExecution.withTenantId(MAIN_TENANT),
             Duration.ofSeconds(60)
         );
         assertThat(finalReplayedExecution.getState().getCurrent()).isEqualTo(Type.FAILED);

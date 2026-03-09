@@ -83,7 +83,7 @@ class PurgeLogsTest {
         Execution execution = runnerUtils.runOne(MAIN_TENANT, "io.kestra.tests", "purge_logs_execution_only");
 
         assertTrue(execution.getState().isSuccess());
-        var outputs = execution.getTaskRunList().getFirst().getOutputs();
+        var outputs = taskOutputService.getOutputs(execution.getTaskRunList().getFirst());
         assertThat((int) outputs.get("executionLogsCount")).isPositive();
         assertThat((int) outputs.get("nonExecutionLogsCount")).isZero();
     }
@@ -115,7 +115,7 @@ class PurgeLogsTest {
         Execution execution = runnerUtils.runOne(MAIN_TENANT, "io.kestra.tests", "purge_logs_trigger_only");
 
         assertTrue(execution.getState().isSuccess());
-        var outputs = execution.getTaskRunList().getFirst().getOutputs();
+        var outputs = taskOutputService.getOutputs(execution.getTaskRunList().getFirst());
         assertThat((int) outputs.get("executionLogsCount")).isZero();
         assertThat((int) outputs.get("nonExecutionLogsCount")).isPositive();
     }
